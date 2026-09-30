@@ -1,16 +1,18 @@
 """
-DuoSecur Pro Engine - Quantitative Sports Betting Intelligence Platform
-100% PURE PYTHON HEADLESS REST API
+DuoSecur Pro Engine - Quantitative Sports Analytics Platform
+Main Application Server (FastAPI + Async Python)
 """
 
+import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse, JSONResponse
 from app.core.config import settings
 from app.api.v1.router import api_router
 
 app = FastAPI(
-    title="DuoSecur Pro — Headless Intelligence Engine",
+    title="DuoSecur Pro — Intelligence Engine",
     version=settings.VERSION,
     description="Moteur d'Aide à la Décision 100% Python Pur : Duo Cote 2.00 Sécurisée, Algorithme Dixon-Coles, Analyse à la Demande et Passerelle Mobile Money.",
     docs_url="/docs",
@@ -29,28 +31,26 @@ app.add_middleware(
 # Register all v1 API routes
 app.include_router(api_router, prefix=settings.API_V1_PREFIX)
 
+# Static files mount
+static_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "static")
+if os.path.exists(static_dir):
+    app.mount("/static", StaticFiles(directory=static_dir), name="static")
 
-@app.get("/", response_class=JSONResponse)
-async def root_status():
-    """Root endpoint returning platform status in pure JSON format (Zero HTML)."""
+
+@app.get("/")
+async def serve_preview_dashboard():
+    """Serves the live interactive dashboard for browser preview."""
+    index_path = os.path.join(static_dir, "index.html")
+    if os.path.exists(index_path):
+        return FileResponse(index_path)
     return {
         "project": "DuoSecur Pro Intelligence Engine",
         "version": settings.VERSION,
-        "status": "active",
-        "stack": "100% Pure Python (FastAPI Async + Dixon-Coles Bivariate)",
-        "ui_mode": "Zero HTML — Console CLI & JSON REST API",
-        "endpoints": {
-            "daily_cote_2": f"{settings.API_V1_PREFIX}/cote2/daily-ticket",
-            "on_demand_match_verdict": f"{settings.API_V1_PREFIX}/analyzer/evaluate-match",
-            "readable_markets_ranking": f"{settings.API_V1_PREFIX}/readable/rank-markets",
-            "bankroll_mentor_compound": f"{settings.API_V1_PREFIX}/mentor/compound-simulation",
-            "mobile_money_payments": f"{settings.API_V1_PREFIX}/payments/checkout",
-            "interactive_api_docs": "/docs"
-        }
+        "status": "online"
     }
 
 
-@app.get("/health", response_class=JSONResponse)
+@app.get("/health")
 async def health_check():
     return {
         "status": "healthy",
