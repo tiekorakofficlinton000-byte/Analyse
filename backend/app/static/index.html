@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="fr" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QuantBet Pro — Aide à la Décision, Événements Lisibles & Cote 2.00 Sécurisée</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        darkbg: '#070b13',
+                        cardbg: '#0e1626',
+                        cardborder: '#1e293b',
+                        accentGreen: '#10b981',
+                        accentBlue: '#3b82f6',
+                        accentAmber: '#f59e0b',
+                        accentPurple: '#a855f7'
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Chart.js for Capital Simulation -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body class="bg-[#070b13] text-slate-100 min-h-screen font-sans antialiased selection:bg-emerald-500 selection:text-black">
+
+    <!-- Top Navigation Bar -->
+    <header class="border-b border-slate-800/80 bg-[#0c1222]/95 backdrop-blur sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-500 via-teal-400 to-cyan-500 flex items-center justify-center font-black text-black text-xl shadow-lg shadow-emerald-500/20">
+                    Q
+                </div>
+                <div>
+                    <div class="flex items-center space-x-2">
+                        <span class="font-black text-lg tracking-tight bg-gradient-to-r from-white via-slate-100 to-emerald-400 bg-clip-text text-transparent">QUANTBET PRO</span>
+                        <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 font-bold uppercase tracking-wider">Aide à la Décision</span>
+                    </div>
+                    <p class="text-[11px] text-slate-400">« On ne cherche pas à gagner gros, on cherche à ne pas perdre. »</p>
+                </div>
+            </div>
+
+            <!-- Currency & Status -->
+            <div class="flex items-center space-x-3">
+                <div class="flex items-center space-x-1.5 bg-slate-900 px-2.5 py-1 rounded-lg border border-slate-800 text-xs">
+                    <span class="text-slate-400 font-mono">Devise :</span>
+                    <button id="btnCurFcfa" onclick="setCurrency('FCFA')" class="px-2 py-0.5 rounded font-bold bg-emerald-500 text-black">FCFA</button>
+                    <button id="btnCurEur" onclick="setCurrency('EUR')" class="px-2 py-0.5 rounded text-slate-400 hover:text-white">EUR (€)</button>
+                </div>
+
+                <div class="hidden sm:flex items-center space-x-2 bg-emerald-950/40 border border-emerald-500/30 px-3 py-1.5 rounded-lg">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <span class="text-xs font-mono text-emerald-300">Bankroll : <strong id="headerBankrollText">50 000 FCFA</strong></span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Workspace -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+
+        <!-- Golden Philosophy Banner -->
+        <section class="bg-gradient-to-r from-emerald-950/40 via-slate-900 to-blue-950/40 border border-emerald-500/30 p-4 rounded-xl flex flex-col md:flex-row items-center justify-between gap-4 shadow-lg">
+            <div class="space-y-1">
+                <div class="flex items-center gap-2">
+                    <span class="text-xs font-mono font-bold px-2 py-0.5 bg-emerald-500/20 text-emerald-300 rounded border border-emerald-500/30 uppercase">RÈGLE FONDAMENTALE</span>
+                    <h1 class="text-sm sm:text-base font-bold text-white">1. Analyser pour eux • 2. Proposer les Choix Lisibles (Cote 2) • 3. Protéger le Capital</h1>
+                </div>
+                <p class="text-xs text-slate-300">Fini de chercher partout une combinaison de cote 2 et de dire après coup : <em>« Si je savais, j'aurais pris ce match-là... »</em>. Le modèle sélectionne pour eux les événements les plus prévisibles et élimine les pièges.</p>
+            </div>
+            <div class="flex items-center gap-2 shrink-0">
+                <button onclick="switchTab('tab-cote2')" class="px-3.5 py-1.5 bg-emerald-500 hover:bg-emerald-400 text-black text-xs font-bold rounded-lg transition shadow">
+                    Voir la Cote 2 du Jour →
+                </button>
+            </div>
+        </section>
+
+        <!-- Navigation Tabs -->
+        <nav class="flex space-x-2 border-b border-slate-800 overflow-x-auto pb-1">
+            <button onclick="switchTab('tab-cote2')" id="nav-cote2" class="tab-btn px-4 py-2.5 text-xs sm:text-sm font-bold border-b-2 border-emerald-500 text-emerald-400 whitespace-nowrap">
+                🎯 1. La Cote 2.00 Sécurisée du Jour
+            </button>
+            <button onclick="switchTab('tab-readable')" id="nav-readable" class="tab-btn px-4 py-2.5 text-xs sm:text-sm font-bold border-b-2 border-transparent text-slate-400 hover:text-slate-200 whitespace-nowrap">
+                💎 2. Les Événements les Plus Lisibles (Le Filtre)
+            </button>
+            <button onclick="switchTab('tab-analyzer')" id="nav-analyzer" class="tab-btn px-4 py-2.5 text-xs sm:text-sm font-bold border-b-2 border-transparent text-slate-400 hover:text-slate-200 whitespace-nowrap">
+                🔍 3. Analyseur Libre de Matchs (Verdict)
+            </button>
+            <button onclick="switchTab('tab-mentor')" id="nav-mentor" class="tab-btn px-4 py-2.5 text-xs sm:text-sm font-bold border-b-2 border-transparent text-slate-400 hover:text-slate-200 whitespace-nowrap">
+                🛡️ 4. Gestion de Capital & Mentor
+            </button>
+            <button onclick="switchTab('tab-telegram')" id="nav-telegram" class="tab-btn px-4 py-2.5 text-xs sm:text-sm font-bold border-b-2 border-transparent text-slate-400 hover:text-slate-200 whitespace-nowrap">
+                📲 5. Bot VIP Telegram
+            </button>
+            <button onclick="switchTab('tab-checkout')" id="nav-checkout" class="tab-btn px-4 py-2.5 text-xs sm:text-sm font-bold border-b-2 border-transparent text-slate-400 hover:text-slate-200 whitespace-nowrap">
+                💳 6. Paiement & 1 000 Abonnés
+            </button>
+        </nav>
+
+        <!-- ========================================== -->
+        <!-- TAB 1: LA COTE 2.00 SÉCURISÉE DU JOUR -->
+        <!-- ========================================== -->
+        <section id="tab-cote2" class="tab-panel space-y-6">
+            <div class="bg-cardbg border border-slate-800 p-6 rounded-2xl relative shadow-xl space-y-6">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800 pb-4">
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs font-mono font-bold px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">LE DUO INTELLIGENT DU JOUR</span>
+                            <span class="text-xs text-slate-400" id="cote2Timestamp">Mis à jour</span>
+                        </div>
+                        <h2 class="text-xl font-black text-white mt-1">Le Ticket Cote 2.00 : Doubler Sereinement Sans Risque Démesuré</h2>
+                        <p class="text-xs text-slate-400 mt-0.5">Le modèle a éliminé 85 affiches instables pour retenir les 2 événements à la plus forte probabilité conjointe.</p>
+                    </div>
+
+                    <div class="bg-gradient-to-r from-emerald-950/60 to-slate-900 border border-emerald-500/50 p-3 rounded-xl text-center md:text-right shrink-0">
+                        <div class="text-[11px] font-mono uppercase text-slate-400">Cote Totale Combinée</div>
+                        <div class="text-3xl font-black text-emerald-400 font-mono" id="cote2TotalOdds">2.04</div>
+                        <div class="text-[11px] text-emerald-300 font-medium">Fiabilité Conjointe : <strong id="cote2Prob">73.5%</strong></div>
+                    </div>
+                </div>
+
+                <!-- Match Legs Container -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="cote2LegsContainer">
+                    <!-- Loaded dynamically -->
+                </div>
+
+                <!-- Capital Staking Advice on this Ticket -->
+                <div class="bg-slate-900/90 border border-slate-800 p-4 rounded-xl flex flex-col md:flex-row items-center justify-between gap-4">
+                    <div class="space-y-1">
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs font-mono font-bold text-amber-400">⚖️ GESTION DU RISQUE :</span>
+                            <span class="text-xs text-slate-300">« Ne pas chercher à gagner gros, chercher à ne pas perdre. »</span>
+                        </div>
+                        <p class="text-xs text-slate-400">Mise conseillée pour ce ticket : <strong class="text-white">2.5% du capital</strong> (<span id="cote2StakeAdvice" class="text-emerald-400 font-bold">1 250 FCFA</span> sur votre bankroll). Gain net potentiel : <span id="cote2GainAdvice" class="text-emerald-400 font-bold">2 550 FCFA</span>.</p>
+                    </div>
+                    <button onclick="trackDailyCote2()" class="px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-black font-bold text-xs rounded-lg transition shadow-lg shadow-emerald-500/20 whitespace-nowrap">
+                        Valider & Suivre ce Ticket →
+                    </button>
+                </div>
+            </div>
+
+            <!-- Alternative Solo Match -->
+            <div class="bg-cardbg border border-slate-800 p-5 rounded-xl flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                    <span class="text-[11px] font-mono uppercase text-slate-400 bg-slate-800 px-2 py-0.5 rounded">Alternative Solo</span>
+                    <h3 class="text-sm font-bold text-white mt-1" id="altSingleTitle">Bayern Munich vs Frankfurt — Bayern gagne & Plus de 2.5 Buts</h3>
+                    <p class="text-xs text-slate-400 mt-0.5">Pour les parieurs qui préfèrent jouer un seul match sec à cote ~1.90.</p>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <div class="text-right font-mono">
+                        <div class="text-xs text-slate-400">Cote Solo</div>
+                        <div class="text-xl font-black text-blue-400" id="altSingleOdds">1.88</div>
+                    </div>
+                    <span class="text-xs px-2.5 py-1 rounded bg-blue-500/20 text-blue-300 border border-blue-500/30 font-mono">Fiabilité 68%</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- TAB 2: LES ÉVÉNEMENTS LES PLUS LISIBLES -->
+        <!-- ========================================== -->
+        <section id="tab-readable" class="tab-panel hidden space-y-6">
+            <div class="bg-cardbg border border-slate-800 p-6 rounded-2xl space-y-6 shadow-xl">
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs font-mono font-bold px-2 py-0.5 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">LE CERVEAU DE SÉLECTION</span>
+                    </div>
+                    <h2 class="text-xl font-black text-white mt-1">Pourquoi Proposer les Événements les Plus Lisibles et Bons Comme Choix ?</h2>
+                    <p class="text-xs text-slate-400 mt-1">Un bon parieur ne devine pas l'avenir. Il sélectionne des marchés <strong>résilients aux aléas</strong> (un carton rouge ou un penalty ne doit pas ruiner le pari).</p>
+                </div>
+
+                <!-- Educational Comparison Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="p-4 rounded-xl bg-emerald-950/20 border border-emerald-500/40 space-y-2">
+                        <div class="text-xs font-mono uppercase text-emerald-400 font-bold">💎 1. Choix Diamant (Anti-Aléa)</div>
+                        <div class="text-sm font-bold text-white">Double Chance (1X) ou Over 1.5 Buts</div>
+                        <p class="text-xs text-slate-300">Couvre 2 issues sur 3 du match, ou valide le gain dès qu'il y a 2 buts n'importe où. Taux de réussite : <strong>80% à 92%</strong>.</p>
+                        <div class="text-[11px] text-emerald-400 font-mono pt-1">Idéal pour construire une Cote 2.00 propre.</div>
+                    </div>
+
+                    <div class="p-4 rounded-xl bg-amber-950/20 border border-amber-500/40 space-y-2">
+                        <div class="text-xs font-mono uppercase text-amber-400 font-bold">⚠️ 2. Choix Volatile (Sensible)</div>
+                        <div class="text-sm font-bold text-white">Victoire Sèche 1X2 du Favori</div>
+                        <p class="text-xs text-slate-300">Si le favori encaisse un contre à la 92e minute (1-1), <strong>tout le pari est perdu</strong>. Cote souvent trompeuse et écrasée à 1.30.</p>
+                        <div class="text-[11px] text-amber-400 font-mono pt-1">À jouer uniquement avec prudence.</div>
+                    </div>
+
+                    <div class="p-4 rounded-xl bg-rose-950/20 border border-rose-500/40 space-y-2">
+                        <div class="text-xs font-mono uppercase text-rose-400 font-bold">⛔ 3. Le Marché Piège Bookmaker</div>
+                        <div class="text-sm font-bold text-white">Scores Exacts & Combinés 10 Matchs</div>
+                        <p class="text-xs text-slate-300">La loterie absolue. La marge du bookmaker y atteint 18%. Le piège numéro 1 qui enrichit les plateformes de paris.</p>
+                        <div class="text-[11px] text-rose-400 font-mono pt-1">Éliminé à 100% par notre algorithme.</div>
+                    </div>
+                </div>
+
+                <!-- Real-Time Market Ranker for Any Match -->
+                <div class="bg-slate-900/90 p-5 rounded-xl border border-slate-800 space-y-4">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div>
+                            <h3 class="text-sm font-bold text-white">Testez la Hiérarchie des Marchés sur ce Match :</h3>
+                            <p class="text-xs text-slate-400">Le modèle classe tous les types de paris du plus lisible au plus dangereux.</p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <input type="text" id="marketRankHome" value="Real Madrid" class="bg-slate-950 border border-slate-700 text-xs px-2.5 py-1.5 rounded text-white">
+                            <span class="text-xs text-slate-400">vs</span>
+                            <input type="text" id="marketRankAway" value="Villarreal" class="bg-slate-950 border border-slate-700 text-xs px-2.5 py-1.5 rounded text-white">
+                            <button onclick="scanMarketReadability()" class="px-3 py-1.5 bg-emerald-500 hover:bg-emerald-400 text-black text-xs font-bold rounded transition">
+                                Classer les Choix
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Ranked Table -->
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs text-slate-300">
+                            <thead class="bg-slate-950 text-slate-400 font-mono uppercase border-b border-slate-800">
+                                <tr>
+                                    <th class="py-2.5 px-3">Type de Pari</th>
+                                    <th class="py-2.5 px-3 text-center">Cote</th>
+                                    <th class="py-2.5 px-3 text-center">Probabilité Réelle</th>
+                                    <th class="py-2.5 px-3 text-center">Indice de Lisibilité</th>
+                                    <th class="py-2.5 px-3">Statut & Recommandation</th>
+                                </tr>
+                            </thead>
+                            <tbody id="marketRankTableBody" class="divide-y divide-slate-800/60 font-sans">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- TAB 3: ANALYSEUR LIBRE DE MATCHS -->
+        <!-- ========================================== -->
+        <section id="tab-analyzer" class="tab-panel hidden space-y-6">
+            <div class="bg-cardbg border border-slate-800 p-6 rounded-2xl space-y-6 shadow-xl">
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs font-mono font-bold px-2 py-0.5 rounded bg-blue-500/20 text-blue-300 border border-blue-500/30">MENU À LA DEMANDE</span>
+                    </div>
+                    <h2 class="text-xl font-black text-white mt-1">Donne le Match de Ton Choix : Analyse & Verdict Mathématique</h2>
+                    <p class="text-xs text-slate-400 mt-1">Tape n'importe quelles équipes (d'Europe, d'Afrique ou d'ailleurs) : le modèle calcule la lisibilité, te donne le choix blindé et t'avertit si c'est un piège bookmaker.</p>
+                </div>
+
+                <!-- Open Match Input Fields -->
+                <div class="bg-slate-900/90 p-5 rounded-xl border border-slate-800 space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="text-xs font-mono text-slate-300 block mb-1">Équipe Domicile (tape ce que tu veux)</label>
+                            <input type="text" id="inputHomeTeam" value="Real Madrid" placeholder="Ex: Real Madrid, ASEC Mimosas, Arsenal, Barça..." class="w-full bg-slate-950 border border-slate-700 text-sm rounded-lg px-3 py-2.5 text-white font-medium focus:outline-none focus:border-emerald-500">
+                        </div>
+                        <div>
+                            <label class="text-xs font-mono text-slate-300 block mb-1">Équipe Extérieur (tape ce que tu veux)</label>
+                            <input type="text" id="inputAwayTeam" value="Chelsea" placeholder="Ex: Chelsea, Al Ahly, Marseille, Villarreal..." class="w-full bg-slate-950 border border-slate-700 text-sm rounded-lg px-3 py-2.5 text-white font-medium focus:outline-none focus:border-emerald-500">
+                        </div>
+                    </div>
+
+                    <!-- Quick Suggestions Chips -->
+                    <div class="flex flex-wrap items-center gap-2 text-xs">
+                        <span class="text-slate-400 font-mono text-[11px]">Suggestions rapides :</span>
+                        <button onclick="setTeams('Real Madrid', 'Barcelona')" class="px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700">Real vs Barça</button>
+                        <button onclick="setTeams('PSG', 'Marseille')" class="px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700">PSG vs Marseille</button>
+                        <button onclick="setTeams('Manchester City', 'Liverpool')" class="px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700">City vs Liverpool</button>
+                        <button onclick="setTeams('ASEC Mimosas', 'Africa Sports')" class="px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700">ASEC vs Africa Sports</button>
+                        <button onclick="setTeams('Al Ahly', 'Zamalek')" class="px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700">Al Ahly vs Zamalek</button>
+                    </div>
+
+                    <div class="pt-2">
+                        <button onclick="runCustomAnalysis()" class="w-full py-3 bg-gradient-to-r from-emerald-500 via-teal-400 to-cyan-400 hover:from-emerald-400 hover:to-cyan-300 text-black font-black text-sm rounded-lg transition shadow-lg shadow-emerald-500/20">
+                            ⚡ Analyser ce Match et Rendre le Verdict Impartial
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Analysis Verdict Card Output -->
+                <div id="customVerdictOutput" class="space-y-4">
+                    <!-- Populated dynamically via JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- TAB 4: GESTION DE CAPITAL (LE MENTOR) -->
+        <!-- ========================================== -->
+        <section id="tab-mentor" class="tab-panel hidden space-y-6">
+            <div class="bg-cardbg border border-slate-800 p-6 rounded-2xl space-y-6 shadow-xl">
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs font-mono font-bold px-2 py-0.5 rounded bg-blue-500/20 text-blue-300 border border-blue-500/30">LE MENTOR DU PARIEUR</span>
+                    </div>
+                    <h2 class="text-xl font-black text-white mt-1">« Même avec peu, ils peuvent s'en sortir » : Démonstration Mathématique</h2>
+                    <p class="text-xs text-slate-400 mt-1">Preuve par les chiffres : 1 seul bon choix ou ticket Cote 2 par jour avec une gestion de mise à 2.5% bat 100% des parieurs de combinés.</p>
+                </div>
+
+                <!-- Interactive Sliders -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 bg-slate-900/80 p-4 rounded-xl border border-slate-800">
+                    <div>
+                        <div class="flex justify-between text-xs mb-1">
+                            <span class="text-slate-300">Capital de Départ :</span>
+                            <span id="labelCapitalInput" class="font-mono font-bold text-emerald-400">25 000 FCFA</span>
+                        </div>
+                        <input type="range" id="sliderCapital" min="5000" max="100000" step="5000" value="25000" oninput="updateMentorSim()" class="w-full accent-emerald-500 cursor-pointer">
+                    </div>
+
+                    <div>
+                        <div class="flex justify-between text-xs mb-1">
+                            <span class="text-slate-300">Durée de l'Expérience :</span>
+                            <span id="labelDaysInput" class="font-mono font-bold text-blue-400">60 Jours</span>
+                        </div>
+                        <input type="range" id="sliderDays" min="30" max="90" step="15" value="60" oninput="updateMentorSim()" class="w-full accent-blue-500 cursor-pointer">
+                    </div>
+
+                    <div>
+                        <div class="flex justify-between text-xs mb-1">
+                            <span class="text-slate-300">Discipline de Mise :</span>
+                            <span class="font-mono font-bold text-amber-400">2.5% du Capital Actuel</span>
+                        </div>
+                        <div class="text-[11px] text-slate-400 font-mono pt-2">Aucun combiné fantaisiste autorisé</div>
+                    </div>
+                </div>
+
+                <!-- Simulation Chart -->
+                <div class="bg-slate-950/70 p-4 rounded-xl border border-slate-800">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs font-mono uppercase text-slate-400">Évolution Comparée des Capitaux</span>
+                        <div class="flex items-center space-x-4 text-xs font-mono">
+                            <span class="text-emerald-400 flex items-center gap-1"><span class="w-2.5 h-2.5 rounded bg-emerald-500 inline-block"></span> Abonné Discipliné</span>
+                            <span class="text-rose-400 flex items-center gap-1"><span class="w-2.5 h-2.5 rounded bg-rose-500 inline-block"></span> Parieur Combinés (Perte Totale)</span>
+                        </div>
+                    </div>
+                    <div class="w-full h-72">
+                        <canvas id="compoundChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Highlights -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="p-4 bg-emerald-950/20 border border-emerald-500/30 rounded-xl">
+                        <div class="text-xs text-emerald-400 font-mono">Capital Final Obtenu</div>
+                        <div class="text-2xl font-black text-white mt-1" id="mentorFinalCapital">71 450 FCFA</div>
+                        <div class="text-xs text-emerald-300 mt-1 font-mono">+185% de profit net sans stress</div>
+                    </div>
+
+                    <div class="p-4 bg-blue-950/20 border border-blue-500/30 rounded-xl">
+                        <div class="text-xs text-blue-400 font-mono">Mise Moyenne Quotidienne</div>
+                        <div class="text-2xl font-black text-white mt-1" id="mentorAvgStake">1 150 FCFA</div>
+                        <div class="text-xs text-slate-400 mt-1 font-mono">Augmente progressivement avec le capital</div>
+                    </div>
+
+                    <div class="p-4 bg-rose-950/20 border border-rose-500/30 rounded-xl">
+                        <div class="text-xs text-rose-400 font-mono">Parieur Combinés de 10 Matchs</div>
+                        <div class="text-2xl font-black text-rose-300 mt-1">0 FCFA</div>
+                        <div class="text-xs text-rose-400 mt-1">Capital 100% perdu dans les cotes miroirs</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- TAB 5: CANAL VIP TELEGRAM -->
+        <!-- ========================================== -->
+        <section id="tab-telegram" class="tab-panel hidden space-y-6">
+            <div class="bg-cardbg border border-slate-800 p-6 rounded-2xl space-y-6 shadow-xl">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800 pb-4">
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs font-mono font-bold px-2 py-0.5 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">BOT TELEGRAM VIP AUTOMATISÉ</span>
+                            <span class="text-xs text-emerald-400 font-mono">1 024 abonnés connectés</span>
+                        </div>
+                        <h2 class="text-xl font-black text-white mt-1">Diffusion Matinale du Ticket & Alertes Directes</h2>
+                        <p class="text-xs text-slate-400 mt-0.5">Le bot envoie automatiquement ce message formaté chaque matin aux abonnés payants sur leur smartphone.</p>
+                    </div>
+
+                    <button onclick="simulateTelegramBroadcast()" class="px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-400 text-black font-extrabold text-xs rounded-lg transition shadow-lg shadow-cyan-500/20 whitespace-nowrap">
+                        🚀 Simuler l'Envoi aux 1 000 Abonnés
+                    </button>
+                </div>
+
+                <div class="max-w-2xl mx-auto bg-[#0f1926] border border-cyan-500/30 rounded-2xl p-5 shadow-2xl relative">
+                    <div class="flex items-center space-x-3 border-b border-slate-800 pb-3 mb-3">
+                        <div class="w-8 h-8 rounded-full bg-cyan-500 flex items-center justify-center font-bold text-black text-sm">
+                            TG
+                        </div>
+                        <div>
+                            <div class="text-sm font-bold text-white flex items-center gap-1.5">
+                                <span>QuantBet VIP Bot</span>
+                                <span class="text-[10px] bg-blue-500/20 text-blue-300 px-1.5 py-0.2 rounded">BOT OFFICIEL</span>
+                            </div>
+                            <div class="text-[10px] text-slate-400">Canal Privé Abonnés • 09:00 UTC</div>
+                        </div>
+                    </div>
+
+                    <pre id="telegramMessagePreview" class="whitespace-pre-wrap font-sans text-xs text-slate-200 leading-relaxed font-normal bg-slate-950/70 p-4 rounded-xl border border-slate-800/80">
+Chargement de l'alerte Telegram...
+                    </pre>
+
+                    <div class="mt-4 flex justify-end">
+                        <button onclick="copyTelegramMessage()" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-mono rounded border border-slate-700 transition">
+                            📋 Copier le Message
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- TAB 6: PAIEMENT & 1 000 ABONNÉS -->
+        <!-- ========================================== -->
+        <section id="tab-checkout" class="tab-panel hidden space-y-6">
+            <div class="bg-cardbg border border-slate-800 p-6 rounded-2xl space-y-6 shadow-xl">
+                <div>
+                    <span class="text-xs font-mono uppercase px-2.5 py-0.5 rounded bg-purple-500/20 text-purple-300 border border-purple-500/30 font-bold">Encaissement & Économie</span>
+                    <h2 class="text-xl font-black text-white mt-1">Caisse d'Abonnement (Mobile Money & Carte) & Business Model</h2>
+                    <p class="text-xs text-slate-400 mt-1">Comment 1 000 parieurs vont payer leur abonnement chaque mois via Wave, Orange Money, MTN ou Carte.</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                    <div class="lg:col-span-5 bg-slate-900/90 border border-slate-800 p-5 rounded-xl space-y-4">
+                        <h3 class="text-sm font-bold text-white">Souscription Abonnement VIP (Test en Direct)</h3>
+                        <p class="text-xs text-slate-400">L'abonné choisit son opérateur et valide son paiement.</p>
+
+                        <div class="space-y-3">
+                            <div>
+                                <label class="text-xs font-mono text-slate-300 block mb-1">Moyen de Paiement :</label>
+                                <select id="paymentProviderSelect" class="w-full bg-slate-950 border border-slate-700 text-xs rounded-lg px-3 py-2 text-white">
+                                    <option value="wave">Wave Mobile Money (CI, Sénégal, UEMOA)</option>
+                                    <option value="orange_money">Orange Money (Afrique de l'Ouest & Centrale)</option>
+                                    <option value="mtn_momo">MTN MoMo (CI, Bénin, Cameroun, Ghana)</option>
+                                    <option value="stripe">Carte Bancaire (Visa / Mastercard)</option>
+                                    <option value="crypto_usdt">USDT TRC20 (Crypto)</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="text-xs font-mono text-slate-300 block mb-1">Numéro Mobile ou Email :</label>
+                                <input type="text" id="paymentCustomerContact" value="+225 07 00 00 00 00" class="w-full bg-slate-950 border border-slate-700 text-xs rounded-lg px-3 py-2 text-white">
+                            </div>
+
+                            <div class="p-3 bg-slate-950 rounded-lg border border-slate-800 flex justify-between items-center text-xs">
+                                <span class="text-slate-400">Montant Mensuel :</span>
+                                <span class="font-black text-emerald-400 text-sm font-mono">15 000 FCFA / mois</span>
+                            </div>
+
+                            <button onclick="simulatePaymentCheckout()" class="w-full py-2.5 bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold text-xs rounded-lg transition shadow">
+                                Simuler le Paiement de l'Abonné →
+                            </button>
+
+                            <div id="paymentResultBox" class="text-xs text-slate-300"></div>
+                        </div>
+                    </div>
+
+                    <div class="lg:col-span-7 bg-slate-900/90 border border-slate-800 p-5 rounded-xl space-y-4">
+                        <div class="flex justify-between items-center">
+                            <h3 class="text-sm font-bold text-white">Calculateur de Revenus Récurrents (MRR)</h3>
+                            <span id="bizSubscribersCountText" class="text-sm font-mono font-black text-purple-400">1 000 Abonnés</span>
+                        </div>
+                        <input type="range" id="sliderBizSubscribers" min="100" max="3000" step="50" value="1000" oninput="updateBizProjections()" class="w-full accent-purple-500 cursor-pointer">
+
+                        <div class="grid grid-cols-2 gap-3 pt-2">
+                            <div class="p-3 bg-slate-950 rounded-lg border border-slate-800">
+                                <div class="text-xs text-slate-400">Revenu Mensuel (MRR)</div>
+                                <div id="bizMrrFcfa" class="text-lg font-black text-emerald-400 mt-1">15 000 000 FCFA</div>
+                                <div id="bizMrrEur" class="text-xs text-slate-400 font-mono">≈ 22 867 € / mois</div>
+                            </div>
+
+                            <div class="p-3 bg-slate-950 rounded-lg border border-slate-800">
+                                <div class="text-xs text-slate-400">Revenu Annuel (ARR)</div>
+                                <div id="bizArrFcfa" class="text-lg font-black text-blue-400 mt-1">180 000 000 FCFA</div>
+                                <div id="bizArrEur" class="text-xs text-slate-400 font-mono">≈ 274 400 € / an</div>
+                            </div>
+                        </div>
+
+                        <div class="p-3 bg-slate-950/80 rounded-lg border border-slate-800 text-xs text-slate-300 space-y-1">
+                            <div class="text-amber-400 font-bold">💡 Pourquoi le modèle d'abonnement est supérieur :</div>
+                            <p>Tu n'as aucun risque de perdre ton argent sur les paris. Tu es le fournisseur de la méthode et de la tranquillité d'esprit. Tes revenus tombent chaque 1er du mois automatiquement.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="max-w-7xl mx-auto px-4 py-8 border-t border-slate-800/80 text-center text-xs text-slate-500 space-y-1">
+        <p>QuantBet Pro — Architecture Décisionnelle & Modélisation Mathématique de Cote 2.00.</p>
+        <p class="font-mono text-slate-600">FastAPI Async • Dixon-Coles Bivariate • Safe Cote 2 Builder • Mobile Money Gateway • Telegram VIP</p>
+    </footer>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>
