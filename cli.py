@@ -30,7 +30,7 @@ console = Console()
 
 def show_header():
     console.clear()
-    title = Text("QUANTBET PRO — TERMINAL QUANTITATIF 100% PYTHON", style="bold white on blue")
+    title = Text("DUOSECUR PRO — TERMINAL QUANTITATIF 100% PYTHON", style="bold white on blue")
     subtitle = Text("« On ne cherche pas à gagner gros, on cherche à ne pas perdre. »", style="italic green")
     console.print(Panel.fit(f"{title}\n{subtitle}", border_style="cyan"))
 

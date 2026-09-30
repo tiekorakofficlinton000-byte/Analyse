@@ -1,5 +1,5 @@
 """
-QuantBet Pro Engine - Institutional Quantitative Sports Analytics Platform
+DuoSecur Pro Engine - Quantitative Sports Betting Intelligence Platform
 100% PURE PYTHON HEADLESS REST API (ZERO HTML)
 """
 
@@ -10,9 +10,9 @@ from app.core.config import settings
 from app.api.v1.router import api_router
 
 app = FastAPI(
-    title="QuantBet Pro — Headless Intelligence Engine",
+    title="DuoSecur Pro — Headless Intelligence Engine",
     version=settings.VERSION,
-    description="Moteur d'Aide à la Décision 100% Python Pur : Cote 2.00 Sécurisée, Algorithme Dixon-Coles, Bot VIP Telegram et Passerelle Mobile Money.",
+    description="Moteur d'Aide à la Décision 100% Python Pur : Duo Cote 2.00 Sécurisée, Algorithme Dixon-Coles, Bot VIP Telegram et Passerelle Mobile Money.",
     docs_url="/docs",
     redoc_url="/redoc"
 )
@@ -34,7 +34,7 @@ app.include_router(api_router, prefix=settings.API_V1_PREFIX)
 async def root_status():
     """Root endpoint returning platform status in pure JSON format (Zero HTML)."""
     return {
-        "project": "QuantBet Pro Intelligence Engine",
+        "project": "DuoSecur Pro Intelligence Engine",
         "version": settings.VERSION,
         "status": "active",
         "stack": "100% Pure Python (FastAPI Async + Dixon-Coles Bivariate)",
@@ -55,7 +55,7 @@ async def root_status():
 async def health_check():
     return {
         "status": "healthy",
-        "service": "QuantBet Pro Engine",
+        "service": "DuoSecur Pro Engine",
         "engine": "Dixon-Coles & Poisson Bivarié",
         "language": "Python 3.13"
     }

@@ -1,12 +1,12 @@
-# Analyser Pro — Intelligence Engine 🚀
+# DuoSecur Pro — Intelligence Engine 🚀
 ### Moteur Quantitatif de Décision Sportive, Cote 2.00 Sécurisée & Gestion de Capital (100% Python)
 
 > **Philosophie Fondatrice :**  
 > *« On ne cherche pas à gagner gros, on cherche à ne pas perdre. »*
 
-**Analyser Pro** résout le plus grand problème des parieurs :  
+**DuoSecur Pro** résout le plus grand problème des parieurs :  
 Souvent, un parieur cherche juste une **combinaison propre de cote 2.00**, mais il ne sait pas quel bon match choisir parmi 50 affiches. Après coup, il se dit : *« Si je savais, j'aurais pris ce match-là et j'aurais gagné... »*.  
-**Analyser Pro automatise cette sélection, classe les événements les plus lisibles, filtre les pièges et impose une discipline mathématique de fer.**
+**DuoSecur Pro sélectionne le duo le plus sûr du jour, classe les événements les plus lisibles, filtre les pièges du bookmaker et impose une discipline mathématique de fer.**
 
 ---
 

@@ -1,5 +1,5 @@
 """
-QuantBet Engine - Core Configuration
+DuoSecur Pro Engine - Core Configuration
 Pydantic v2 Settings for secure configuration management.
 """
 
@@ -8,12 +8,12 @@ from pydantic import BaseModel
 
 
 class Settings(BaseModel):
-    PROJECT_NAME: str = "QuantBet Intelligence Engine"
+    PROJECT_NAME: str = "DuoSecur Pro Intelligence Engine"
     VERSION: str = "1.0.0"
     API_V1_PREFIX: str = "/api/v1"
     
     # Security
-    SECRET_KEY: str = "quantbet-production-grade-master-secret-key-3847291048"
+    SECRET_KEY: str = "duosecur-production-grade-master-secret-key-92837410"
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24  # 24 hours
     
