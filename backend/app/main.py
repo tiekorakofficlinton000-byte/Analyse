@@ -1,25 +1,23 @@
 """
-QuantBet Engine - Institutional Sports Betting Analytics Platform
-Main Application Server (FastAPI + Async Architecture)
+QuantBet Pro Engine - Institutional Quantitative Sports Analytics Platform
+100% PURE PYTHON HEADLESS REST API (ZERO HTML)
 """
 
-import os
-from fastapi import FastAPI, Request
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse, JSONResponse
+from fastapi.responses import JSONResponse
 from app.core.config import settings
 from app.api.v1.router import api_router
 
 app = FastAPI(
-    title=settings.PROJECT_NAME,
+    title="QuantBet Pro — Headless Intelligence Engine",
     version=settings.VERSION,
-    description="Quantitative Sports Betting Model & High-Conversion SaaS Subscription Engine.",
+    description="Moteur d'Aide à la Décision 100% Python Pur : Cote 2.00 Sécurisée, Algorithme Dixon-Coles, Bot VIP Telegram et Passerelle Mobile Money.",
     docs_url="/docs",
     redoc_url="/redoc"
 )
 
-# Robust CORS configuration for web preview environments
+# CORS configuration
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -28,32 +26,36 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Register API v1 routes
+# Register all v1 API routes
 app.include_router(api_router, prefix=settings.API_V1_PREFIX)
 
-# Static directory path
-static_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "static")
-if not os.path.exists(static_dir):
-    os.makedirs(static_dir, exist_ok=True)
 
-app.mount("/static", StaticFiles(directory=static_dir), name="static")
+@app.get("/", response_class=JSONResponse)
+async def root_status():
+    """Root endpoint returning platform status in pure JSON format (Zero HTML)."""
+    return {
+        "project": "QuantBet Pro Intelligence Engine",
+        "version": settings.VERSION,
+        "status": "active",
+        "stack": "100% Pure Python (FastAPI Async + Dixon-Coles Bivariate)",
+        "ui_mode": "Zero HTML — Console CLI & Bot Telegram & JSON API",
+        "endpoints": {
+            "daily_cote_2": f"{settings.API_V1_PREFIX}/cote2/daily-ticket",
+            "on_demand_match_verdict": f"{settings.API_V1_PREFIX}/analyzer/evaluate-match",
+            "readable_markets_ranking": f"{settings.API_V1_PREFIX}/readable/rank-markets",
+            "bankroll_mentor_compound": f"{settings.API_V1_PREFIX}/mentor/compound-simulation",
+            "telegram_vip_alert": f"{settings.API_V1_PREFIX}/telegram/preview-daily-alert",
+            "mobile_money_payments": f"{settings.API_V1_PREFIX}/payments/checkout",
+            "interactive_api_docs": "/docs"
+        }
+    }
 
 
-@app.get("/")
-async def serve_dashboard():
-    """Serves the interactive Bloomberg-style quant sports terminal."""
-    index_path = os.path.join(static_dir, "index.html")
-    if os.path.exists(index_path):
-        return FileResponse(index_path)
-    return {"message": f"{settings.PROJECT_NAME} v{settings.VERSION} is running. Visit /docs for API."}
-
-
-@app.get("/health")
+@app.get("/health", response_class=JSONResponse)
 async def health_check():
     return {
         "status": "healthy",
-        "service": settings.PROJECT_NAME,
-        "version": settings.VERSION,
-        "engine": "Dixon-Coles & Bivariate Poisson v1.0",
-        "timestamp": "2026-09-30T12:00:00Z"
+        "service": "QuantBet Pro Engine",
+        "engine": "Dixon-Coles & Poisson Bivarié",
+        "language": "Python 3.13"
     }
