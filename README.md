@@ -1,5 +1,5 @@
 # DuoSecur Pro — Intelligence Engine 🚀
-### Moteur Quantitatif de Décision Sportive, Cote 2.00 Sécurisée & Gestion de Capital (100% Python)
+### Moteur Quantitatif de Décision Sportive, Cote 2.00 Sécurisée & Gestion de Capital (100% Python Pur)
 
 > **Philosophie Fondatrice :**  
 > *« On ne cherche pas à gagner gros, on cherche à ne pas perdre. »*
@@ -10,7 +10,7 @@ Souvent, un parieur cherche juste une **combinaison propre de cote 2.00**, mais 
 
 ---
 
-## 🏛️ Les Piliers du Système (100% Python Pur — Zéro HTML)
+## 🏛️ Les Piliers du Système (100% Python Pur — Zéro HTML, Aucun Bot Externe)
 
 ### 1. ANALYSER pour l'Abonné (Le Moteur Dixon-Coles & Poisson Bivarié)
 * Évalue les Expected Goals ($xG$) réels et la corrélation bivariée.
@@ -39,9 +39,8 @@ L'abonné peut soumettre n'importe quelle affiche du monde (Europe, Afrique, Am�
 3. **Le Choix Équilibré :** Option value autour de cote 1.80 - 2.00.
 4. **Le Piège Bookmaker Détecté :** Explication de la cote trompeuse où le bookmaker s'enrichit sur les parieurs naïfs.
 
-### 5. BOT VIP TELEGRAM & PAIEMENTS MOBILE MONEY
-* **Bot Telegram VIP :** Diffusion automatique chaque matin du ticket Cote 2.00 formaté avec explications et gestion de mise.
-* **Caisse d'Abonnement :** Wave Mobile Money, Orange Money, MTN MoMo, Stripe et USDT.
+### 5. PAIEMENTS & MONÉTISATION MOBILE MONEY
+* Caisse d'Abonnement automatique : Wave Mobile Money, Orange Money, MTN MoMo, Stripe et USDT.
 
 ---
 
@@ -61,8 +60,7 @@ python3 run.py
 
 ## 🧪 Tests Unitaires Automatisés
 
-L'ensemble des modules mathématiques et de décision est couvert par des tests unitaires Pytest :
 ```bash
 pytest tests/
-# 12/12 tests passés avec succès
+# Tous les tests unitaires validés avec succès
 ```

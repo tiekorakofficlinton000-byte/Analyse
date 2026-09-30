@@ -1,6 +1,6 @@
 """
-QuantBet Engine - V1 Master Router
-Aggregates all API v1 domain sub-routers.
+DuoSecur Pro Engine - V1 Master Router
+Aggregates all API v1 domain sub-routers (No Telegram bot).
 """
 
 from fastapi import APIRouter
@@ -11,7 +11,6 @@ from app.api.v1.endpoints_billing import router as billing_router
 from app.api.v1.endpoints_analyzer import router as analyzer_router
 from app.api.v1.endpoints_cote2 import router as cote2_router
 from app.api.v1.endpoints_bankroll_mentor import router as mentor_router
-from app.api.v1.endpoints_telegram import router as telegram_router
 from app.api.v1.endpoints_payments import router as payments_router
 from app.api.v1.endpoints_readable import router as readable_router
 
@@ -24,6 +23,5 @@ api_router.include_router(billing_router)
 api_router.include_router(analyzer_router)
 api_router.include_router(cote2_router)
 api_router.include_router(mentor_router)
-api_router.include_router(telegram_router)
 api_router.include_router(payments_router)
 api_router.include_router(readable_router)

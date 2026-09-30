@@ -1,6 +1,6 @@
 """
 DuoSecur Pro Engine - Quantitative Sports Betting Intelligence Platform
-100% PURE PYTHON HEADLESS REST API (ZERO HTML)
+100% PURE PYTHON HEADLESS REST API (ZERO HTML, NO TELEGRAM BOT)
 """
 
 from fastapi import FastAPI
@@ -12,7 +12,7 @@ from app.api.v1.router import api_router
 app = FastAPI(
     title="DuoSecur Pro — Headless Intelligence Engine",
     version=settings.VERSION,
-    description="Moteur d'Aide à la Décision 100% Python Pur : Duo Cote 2.00 Sécurisée, Algorithme Dixon-Coles, Bot VIP Telegram et Passerelle Mobile Money.",
+    description="Moteur d'Aide à la Décision 100% Python Pur : Duo Cote 2.00 Sécurisée, Algorithme Dixon-Coles, Analyse à la Demande et Passerelle Mobile Money.",
     docs_url="/docs",
     redoc_url="/redoc"
 )
@@ -38,13 +38,12 @@ async def root_status():
         "version": settings.VERSION,
         "status": "active",
         "stack": "100% Pure Python (FastAPI Async + Dixon-Coles Bivariate)",
-        "ui_mode": "Zero HTML — Console CLI & Bot Telegram & JSON API",
+        "ui_mode": "Zero HTML — Console CLI & JSON REST API",
         "endpoints": {
             "daily_cote_2": f"{settings.API_V1_PREFIX}/cote2/daily-ticket",
             "on_demand_match_verdict": f"{settings.API_V1_PREFIX}/analyzer/evaluate-match",
             "readable_markets_ranking": f"{settings.API_V1_PREFIX}/readable/rank-markets",
             "bankroll_mentor_compound": f"{settings.API_V1_PREFIX}/mentor/compound-simulation",
-            "telegram_vip_alert": f"{settings.API_V1_PREFIX}/telegram/preview-daily-alert",
             "mobile_money_payments": f"{settings.API_V1_PREFIX}/payments/checkout",
             "interactive_api_docs": "/docs"
         }

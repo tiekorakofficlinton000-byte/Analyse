@@ -1,13 +1,12 @@
 #!/usr/bin/env python3
 """
-QuantBet Pro - 100% PURE PYTHON INTERACTIVE TERMINAL
-No HTML. No web browser required. Pure mathematical quant terminal.
+DuoSecur Pro - 100% PURE PYTHON INTERACTIVE TERMINAL
+No HTML. No Telegram Bot. Pure mathematical decision engine.
 """
 
 import sys
 import os
 
-# Add local path
 base_dir = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(base_dir, "lib"))
 sys.path.insert(0, os.path.join(base_dir, "backend"))
@@ -22,7 +21,6 @@ from app.modules.quant_engine.cote2_builder import generate_daily_cote_2
 from app.modules.quant_engine.match_analyzer import analyze_match_on_demand
 from app.modules.quant_engine.readable_picks_engine import evaluate_market_readability
 from app.modules.quant_engine.bankroll_mentor import simulate_compound_growth
-from app.modules.notifications.telegram_bot import format_telegram_cote2_alert
 from app.modules.billing.payment_gateway import initiate_subscription_payment, confirm_subscription_payment
 
 console = Console()
@@ -37,10 +35,10 @@ def show_header():
 
 def menu_cote2():
     show_header()
-    console.print("\n[bold cyan]🎯 CHARGEMENT DU TICKET COTE 2.00 DU JOUR...[/bold cyan]\n")
+    console.print("\n[bold cyan]🎯 CHARGEMENT DU TICKET COTE 2.00 SÉCURISÉE DU JOUR...[/bold cyan]\n")
     ticket = generate_daily_cote_2()
 
-    table = Table(title=f"Ticket Cote {ticket['combined_odds']:.2f} — Fiabilité : {ticket['joint_probability_pct']}%", border_style="green")
+    table = Table(title=f"Ticket Cote {ticket['combined_odds']:.2f} — Fiabilité Conjointe : {ticket['joint_probability_pct']}%", border_style="green")
     table.add_column("#", style="bold yellow", width=3)
     table.add_column("Match & Compétition", style="white", width=30)
     table.add_column("Sélection Recommandée", style="bold green", width=32)
@@ -88,7 +86,6 @@ def menu_analyze_match():
         title="VERDICT GLOBAL DU MODÈLE"
     ))
 
-    # Choices breakdown
     table = Table(title="OPTIONS RECOMMANDÉES PAR LE MODÈLE", border_style="cyan")
     table.add_column("Type de Choix", style="bold yellow", width=25)
     table.add_column("Sélection", style="bold white", width=35)
@@ -192,25 +189,6 @@ def menu_mentor_compound():
     Prompt.ask("\n[dim]Appuyez sur Entrée pour revenir au menu...[/dim]")
 
 
-def menu_telegram_dispatch():
-    show_header()
-    console.print("\n[bold cyan]📲 BOT TELEGRAM VIP AUTOMATISÉ[/bold cyan]\n")
-    alert = format_telegram_cote2_alert()
-
-    console.print(Panel(
-        alert["raw_message"],
-        title="[bold cyan]APERÇU DU MESSAGE DIFFUSÉ AUX 1 024 ABONNÉS VIP[/bold cyan]",
-        border_style="cyan"
-    ))
-
-    choice = Prompt.ask("\nVoulez-vous simuler l'envoi immédiat du ticket aux abonnés ?", choices=["o", "n"], default="o")
-    if choice == "o":
-        console.print("\n[bold green]✅ Message diffusé avec succès sur le canal VIP Telegram ![/bold green]")
-        console.print("[dim]1 024 abonnés ont reçu la notification avec le ticket Cote 2.00.[/dim]\n")
-    
-    Prompt.ask("[dim]Appuyez sur Entrée pour revenir au menu...[/dim]")
-
-
 def menu_mobile_money():
     show_header()
     console.print("\n[bold cyan]💳 SIMULATEUR D'ENCAISSEMENT ABONNEMENTS (MOBILE MONEY & STRIPE)[/bold cyan]\n")
@@ -230,7 +208,6 @@ def menu_mobile_money():
         f"[bold green]✅ PAIEMENT DE 15 000 FCFA VALIDÉ ![/bold green]\n"
         f"Statut : {confirmed['status']}\n"
         f"Abonnement activé : [bold cyan]{confirmed['activated_tier']} (30 jours)[/bold cyan]\n"
-        f"Lien canal privé généré : [blue]{confirmed['telegram_vip_link']}[/blue]\n"
         f"L'abonné a été ajouté automatiquement à la liste des 1 000 membres payants.",
         border_style="green"
     ))
@@ -240,16 +217,15 @@ def menu_mobile_money():
 def main():
     while True:
         show_header()
-        console.print("[bold yellow]MENU PRINCIPAL — 100% PYTHON (ZÉRO HTML)[/bold yellow]\n")
+        console.print("[bold yellow]MENU PRINCIPAL — 100% PYTHON (ZÉRO HTML, AUCUN BOT TELEGRAM)[/bold yellow]\n")
         console.print("  [bold green]1.[/bold green] 🎯 Afficher le Ticket Cote 2.00 Sécurisée du Jour")
         console.print("  [bold green]2.[/bold green] 🔍 Analyser N'importe Quel Match à la Demande (Verdict & Pièges)")
         console.print("  [bold green]3.[/bold green] 💎 Classer les Marchés par Lisibilité (Choix Diamant vs Loterie)")
         console.print("  [bold green]4.[/bold green] 🛡️ Mentor de Capital (Simulation Intérêts Composés sur 60 jours)")
-        console.print("  [bold green]5.[/bold green] 📲 Diffuser l'Alerte sur le Bot Telegram VIP")
-        console.print("  [bold green]6.[/bold green] 💳 Simuler un Encaissement Mobile Money (Wave / Orange Money)")
+        console.print("  [bold green]5.[/bold green] 💳 Simuler un Encaissement Mobile Money (Wave / Orange Money)")
         console.print("  [bold red]0.[/bold red] 🚪 Quitter le Terminal\n")
 
-        choice = Prompt.ask("Votre choix", choices=["1", "2", "3", "4", "5", "6", "0"], default="1")
+        choice = Prompt.ask("Votre choix", choices=["1", "2", "3", "4", "5", "0"], default="1")
 
         if choice == "1":
             menu_cote2()
@@ -260,8 +236,6 @@ def main():
         elif choice == "4":
             menu_mentor_compound()
         elif choice == "5":
-            menu_telegram_dispatch()
-        elif choice == "6":
             menu_mobile_money()
         elif choice == "0":
             console.print("\n[bold cyan]Au revoir ! Continuez à protéger votre capital.[/bold cyan]\n")
