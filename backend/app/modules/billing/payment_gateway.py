@@ -88,6 +88,6 @@ def confirm_subscription_payment(transaction_id: str) -> Dict[str, Any]:
         "status": "SUCCESS_ACTIVATED",
         "activated_tier": "PRO",
         "validity_days": 30,
-        "telegram_vip_link": "https://t.me/+QuantBet_VIP_Private_Invitelink",
+        "vip_access_link": "https://duosecur.io/vip-access",
         "confirmed_at": datetime.now(timezone.utc).isoformat()
     }

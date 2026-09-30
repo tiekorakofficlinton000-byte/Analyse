@@ -1,6 +1,6 @@
 """
 DuoSecur Pro Engine - V1 Master Router
-Aggregates all API v1 domain sub-routers (No Telegram bot).
+Aggregates all API v1 domain sub-routers.
 """
 
 from fastapi import APIRouter

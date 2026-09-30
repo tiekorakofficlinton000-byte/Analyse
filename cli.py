@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 DuoSecur Pro - 100% PURE PYTHON INTERACTIVE TERMINAL
-No HTML. No Telegram Bot. Pure mathematical decision engine.
+Pure mathematical decision engine.
 """
 
 import sys
@@ -217,7 +217,7 @@ def menu_mobile_money():
 def main():
     while True:
         show_header()
-        console.print("[bold yellow]MENU PRINCIPAL — 100% PYTHON (ZÉRO HTML, AUCUN BOT TELEGRAM)[/bold yellow]\n")
+        console.print("[bold yellow]MENU PRINCIPAL — DUOSECUR PRO (100% PYTHON)[/bold yellow]\n")
         console.print("  [bold green]1.[/bold green] 🎯 Afficher le Ticket Cote 2.00 Sécurisée du Jour")
         console.print("  [bold green]2.[/bold green] 🔍 Analyser N'importe Quel Match à la Demande (Verdict & Pièges)")
         console.print("  [bold green]3.[/bold green] 💎 Classer les Marchés par Lisibilité (Choix Diamant vs Loterie)")

@@ -33,7 +33,7 @@ AVAILABLE_PLANS: Dict[SubscriptionTier, PlanInfo] = {
             "Signaux Value Bets temps réel illimités (EV jusqu'à +15%)",
             "Calculateur de mise Quarter-Kelly automatique",
             "Suivi de 12 bookmakers (Pinnacle, Bet365, 1xBet, etc.)",
-            "Alertes Telegram instantanées en direct",
+            "Alertes instantanées en direct par notification",
             "Gestionnaire de bankroll & simulateur Monte Carlo"
         ],
         access_ev_threshold=15.0,
@@ -50,7 +50,7 @@ AVAILABLE_PLANS: Dict[SubscriptionTier, PlanInfo] = {
             "Tout le pack PRO inclus",
             "Radar Dropping Odds & détection de mouvements de cotes sharp",
             "Accès API REST + Webhooks direct trading",
-            "Canal privé Telegram des parieurs institutionnels",
+            "Cercle privé des parieurs institutionnels",
             "Accompagnement et sizing personnalisé de bankroll"
         ],
         access_ev_threshold=99.0,

@@ -1,6 +1,6 @@
 """
 DuoSecur Pro Engine - Quantitative Sports Betting Intelligence Platform
-100% PURE PYTHON HEADLESS REST API (ZERO HTML, NO TELEGRAM BOT)
+100% PURE PYTHON HEADLESS REST API
 """
 
 from fastapi import FastAPI
