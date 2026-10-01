@@ -3,7 +3,7 @@ QuantBet Engine - Pydantic Request & Response Schemas
 Used for API validation, serialization, and OpenAPI documentation.
 """
 
-from typing import Optional, List, Dict
+from typing import Optional, List, Dict, Any
 from pydantic import BaseModel, Field, EmailStr
 from app.domain.models import SubscriptionTier, MarketType, ValueBetSignal, PlanInfo
 
@@ -11,8 +11,7 @@ from app.domain.models import SubscriptionTier, MarketType, ValueBetSignal, Plan
 # --- Authentication Schemas ---
 class UserRegisterRequest(BaseModel):
     email: EmailStr
-    password: str = Field(..., min_length=6, description="Password min 6 characters")
-    initial_bankroll: Optional[float] = Field(1000.0, ge=50.0, description="Initial bankroll amount")
+    password: str = Field(..., min_length=4, description="Mot de passe")
 
 
 class UserLoginRequest(BaseModel):
@@ -25,14 +24,28 @@ class TokenResponse(BaseModel):
     token_type: str = "bearer"
     tier: SubscriptionTier
     email: str
-    bankroll_eur: float
+    trial_days_remaining: int = 3
+    daily_analysis_count: int = 0
+    max_analyses: int = 5
+    analyses_remaining: int = 5
+    max_alternatives: int = 1
+    has_cote2: bool = True
+    has_cote3: bool = False
+    has_cote5: bool = False
 
 
 class UserResponse(BaseModel):
     id: str
     email: str
     tier: SubscriptionTier
-    bankroll_eur: float
+    trial_days_remaining: int = 3
+    daily_analysis_count: int = 0
+    max_analyses: int = 5
+    analyses_remaining: int = 5
+    max_alternatives: int = 1
+    has_cote2: bool = True
+    has_cote3: bool = False
+    has_cote5: bool = False
     created_at: str
 
 

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DuoSecur Pro — Aide à la Décision & Analyses Quantitatives</title>
+    <title>DuoSecur Pro — Cotes 2 • 3 • 5 & Analyses Quantitatives</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -40,13 +40,36 @@
                 </div>
             </div>
 
-            <!-- Header Action Button -->
-            <div class="flex items-center space-x-2">
-                <button onclick="openSubscriptionModal('PREMIUM')" class="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-400 hover:from-amber-400 hover:to-yellow-300 text-black text-xs font-black shadow-lg shadow-amber-500/20 transition flex items-center gap-1.5">
-                    <span>👑</span>
-                    <span class="hidden sm:inline">Rejoindre le VIP</span>
-                    <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-black/20">Dès 1 000 F</span>
-                </button>
+            <!-- Header Auth & Action Area -->
+            <div class="flex items-center space-x-2.5">
+                
+                <!-- Guest View (Not logged in) -->
+                <div id="headerGuestArea" class="flex items-center space-x-2">
+                    <button onclick="openAuthModal('login')" class="px-3 py-1.5 rounded-lg text-xs font-bold text-slate-300 hover:text-white transition">
+                        Connexion
+                    </button>
+                    <button onclick="openAuthModal('register')" class="px-3.5 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black text-xs font-black shadow-md shadow-emerald-500/20 transition flex items-center gap-1.5">
+                        <span>🎁</span>
+                        <span>S'inscrire (3 Jours Gratuits)</span>
+                    </button>
+                </div>
+
+                <!-- Logged In View -->
+                <div id="headerUserArea" class="hidden flex items-center space-x-2.5">
+                    <div class="hidden sm:flex flex-col text-right">
+                        <span id="headerUserEmail" class="text-xs font-bold text-white truncate max-w-[140px]">utilisateur@email.com</span>
+                        <span id="headerUserBadge" class="text-[10px] font-mono text-emerald-400">🎁 Essai Gratuit (3 jours)</span>
+                    </div>
+
+                    <button onclick="openSubscriptionModal('PREMIUM')" id="headerUpgradeBtn" class="px-3 py-1 rounded-lg bg-gradient-to-r from-amber-500 to-yellow-400 text-black text-xs font-black shadow transition">
+                        👑 Passer Pro (2 000 F)
+                    </button>
+
+                    <button onclick="logoutUser()" title="Se déconnecter" class="px-2 py-1 rounded text-slate-400 hover:text-rose-400 text-xs font-mono transition">
+                        Sortir ✕
+                    </button>
+                </div>
+
             </div>
         </div>
     </header>
@@ -54,93 +77,109 @@
     <!-- Main Workspace -->
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
 
+        <!-- Banner for Free Trial / Account Status -->
+        <div id="accountStatusBanner" class="p-3.5 rounded-xl bg-gradient-to-r from-emerald-950/40 via-slate-900 to-blue-950/40 border border-emerald-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+            <div class="flex items-center gap-2">
+                <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-mono font-bold" id="bannerTrialStatusTag">🎁 ESSAI 3 JOURS GRATUITS</span>
+                <span class="text-slate-200" id="bannerTrialStatusText">Profitez de vos 3 jours d'essai offerts pour tester la Cote 2.00 et vos 5 analyses quotidiennes.</span>
+            </div>
+            <div class="flex items-center gap-2 shrink-0">
+                <button onclick="openSubscriptionModal('SIMPLE')" class="px-3 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-white font-bold transition border border-slate-700">
+                    Simple : 1 000 F/mois
+                </button>
+                <button onclick="openSubscriptionModal('PREMIUM')" class="px-3 py-1 rounded-lg bg-gradient-to-r from-amber-500 to-yellow-400 text-black font-black transition shadow">
+                    👑 Pro : 2 000 F/mois
+                </button>
+            </div>
+        </div>
+
         <!-- Navigation Tabs -->
         <nav class="flex space-x-2 border-b border-slate-800 overflow-x-auto pb-1">
             <button onclick="switchTab('tab-cote2')" id="nav-cote2" class="tab-btn px-4 py-2.5 text-xs sm:text-sm font-bold border-b-2 border-emerald-500 text-emerald-400 whitespace-nowrap">
-                🎯 1. Tickets Combinés (Cote 2 • 3 • 5) & Sélection Premium
+                🎯 1. Tickets Combinés (Cote 2 • 3 • 5) & Alternatives
             </button>
             <button onclick="switchTab('tab-readable')" id="nav-readable" class="tab-btn px-4 py-2.5 text-xs sm:text-sm font-bold border-b-2 border-transparent text-slate-400 hover:text-slate-200 whitespace-nowrap">
                 💎 2. Les Événements les Plus Lisibles (Le Filtre)
             </button>
             <button onclick="switchTab('tab-analyzer')" id="nav-analyzer" class="tab-btn px-4 py-2.5 text-xs sm:text-sm font-bold border-b-2 border-transparent text-slate-400 hover:text-slate-200 whitespace-nowrap">
-                🔍 3. Analyseur Libre de Matchs (Verdict)
+                🔍 3. Analyseur Manuel d'Équipes (Verdict)
             </button>
         </nav>
 
-        <!-- TAB 1: TICKETS DU JOUR (COTE 2, 3, 5) & SÉLECTION PREMIUM -->
+        <!-- TAB 1: TICKETS DU JOUR (COTE 2, 3, 5) & ALTERNATIVES -->
         <section id="tab-cote2" class="tab-panel space-y-8">
             
-            <!-- GRILLE DES TARIFS : ABONNEMENT SIMPLE (1 000 F) & PREMIUM (2 000 F) -->
+            <!-- GRILLE DES DEUX FORMULES : SIMPLE (1 000 F) ET PRO (2 000 F) -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 
-                <!-- Plan Simple : 1 000 FCFA / mois -->
+                <!-- Formule Simple : 1 000 FCFA / mois -->
                 <div class="bg-cardbg border border-slate-800 hover:border-emerald-500/40 rounded-2xl p-5 flex flex-col justify-between transition shadow-lg relative">
                     <div class="space-y-3">
                         <div class="flex items-center justify-between">
-                            <span class="text-xs font-mono font-bold px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 uppercase">Abonnement Simple</span>
-                            <span class="text-[11px] font-mono text-slate-400 bg-slate-900 px-2 py-0.5 rounded border border-slate-800">30 Jours</span>
+                            <span class="text-xs font-mono font-bold px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 uppercase">Formule Simple</span>
+                            <span class="text-[11px] font-mono text-emerald-400 bg-emerald-950/40 px-2 py-0.5 rounded border border-emerald-500/30">3 Jours Gratuits</span>
                         </div>
                         <div>
                             <div class="flex items-baseline gap-1.5">
                                 <span class="text-3xl font-black text-white font-mono">1 000 FCFA</span>
                                 <span class="text-xs text-slate-400">/ mois</span>
                             </div>
-                            <p class="text-xs text-slate-400 mt-1">L'essentiel pour sécuriser ses paris et doubler sereinement sans risque.</p>
+                            <p class="text-xs text-slate-400 mt-1">3 jours gratuits, puis 1 000 F/mois pour doubler son capital sereinement.</p>
                         </div>
                         <ul class="text-xs text-slate-300 space-y-2 pt-2 border-t border-slate-800">
                             <li class="flex items-center gap-2 text-emerald-400">
-                                <span>✓</span> <span class="text-white"><strong>Ticket Cote 2.00 Sécurisée du Jour</strong> (Duo Blindé)</span>
+                                <span>✓</span> <span class="text-white"><strong>Proposition de Cote 2.00</strong> quotidienne (Duo Blindé)</span>
                             </li>
                             <li class="flex items-center gap-2 text-emerald-400">
-                                <span>✓</span> <span class="text-white">Accès aux Marchés les Plus Lisibles (Le Filtre Anti-Aléa)</span>
+                                <span>✓</span> <span class="text-white"><strong>1 seul événement en alternative</strong> très bien analysé</span>
+                            </li>
+                            <li class="flex items-center gap-2 text-emerald-400">
+                                <span>✓</span> <span class="text-white"><strong>5 analyses par jour</strong> sur la section manuelle des équipes</span>
                             </li>
                             <li class="flex items-center gap-2 text-slate-500">
-                                <span>✕</span> <span class="line-through">Tickets Cote 3.00 & Cote 5.00</span>
-                            </li>
-                            <li class="flex items-center gap-2 text-slate-500">
-                                <span>✕</span> <span class="line-through">Matchs de la semaine analysés en profondeur</span>
+                                <span>✕</span> <span class="line-through">Cotes 3 & 5 et 5 alternatives (Réservé Pro)</span>
                             </li>
                         </ul>
                     </div>
                     <button onclick="openSubscriptionModal('SIMPLE')" class="mt-5 w-full py-2.5 bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs rounded-xl transition border border-slate-700 flex items-center justify-center gap-2">
-                        <span>Souscrire à la Formule Simple (1 000 F) →</span>
+                        <span>Choisir l'Abonnement Simple (1 000 F) →</span>
                     </button>
                 </div>
 
-                <!-- Plan Premium VIP : 2 000 FCFA / mois -->
+                <!-- Formule Pro : 2 000 FCFA / mois -->
                 <div class="bg-gradient-to-br from-amber-950/30 via-slate-900 to-cardbg border border-amber-500/50 rounded-2xl p-5 flex flex-col justify-between transition shadow-xl relative">
                     <div class="absolute -top-3 right-5 bg-gradient-to-r from-amber-500 to-yellow-400 text-black text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full shadow-md">
-                        Recommandé • Meilleure Valeur
+                        Pack Pro VIP
                     </div>
                     <div class="space-y-3">
                         <div class="flex items-center justify-between">
-                            <span class="text-xs font-mono font-black px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40 uppercase">Abonnement Premium VIP</span>
-                            <span class="text-[11px] font-mono text-amber-400 bg-amber-950/40 px-2 py-0.5 rounded border border-amber-500/30">Accès Total</span>
+                            <span class="text-xs font-mono font-black px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40 uppercase">Abonnement Pro</span>
+                            <span class="text-[11px] font-mono text-amber-400 bg-amber-950/40 px-2 py-0.5 rounded border border-amber-500/30">Accès Total Illimité</span>
                         </div>
                         <div>
                             <div class="flex items-baseline gap-1.5">
                                 <span class="text-3xl font-black text-amber-400 font-mono">2 000 FCFA</span>
                                 <span class="text-xs text-slate-400">/ mois</span>
                             </div>
-                            <p class="text-xs text-slate-300 mt-1">L'arsenal complet : toutes les cotes et les chocs décortiqués par les modèles.</p>
+                            <p class="text-xs text-slate-300 mt-1">L'arsenal complet pour parieurs exigeants et investisseurs sportifs.</p>
                         </div>
                         <ul class="text-xs text-slate-200 space-y-2 pt-2 border-t border-slate-800">
                             <li class="flex items-center gap-2 text-amber-400">
-                                <span>★</span> <span><strong>Tout l'Abonnement Simple inclus</strong> (Cote 2.00)</span>
+                                <span>★</span> <span><strong>Proposition de Cotes 2, 3 et 5</strong> débloquées au quotidien</span>
                             </li>
                             <li class="flex items-center gap-2 text-amber-400">
-                                <span>★</span> <span><strong>Tickets Cote 3.00 & Cote 5.00</strong> débloqués au quotidien</span>
+                                <span>★</span> <span><strong>5 événements en alternative</strong> décortiqués chaque semaine</span>
                             </li>
                             <li class="flex items-center gap-2 text-amber-400">
-                                <span>★</span> <span><strong>Matchs de la Semaine très bien analysés</strong> (xG, choix blindés, pièges)</span>
+                                <span>★</span> <span><strong>Analyses ILLIMITÉES</strong> sur la section manuelle des équipes</span>
                             </li>
                             <li class="flex items-center gap-2 text-amber-400">
-                                <span>★</span> <span>Analyseur libre de matchs illimité pour toutes les affiches</span>
+                                <span>★</span> <span>Support prioritaire et alertes cotes à forte valeur</span>
                             </li>
                         </ul>
                     </div>
                     <button onclick="openSubscriptionModal('PREMIUM')" class="mt-5 w-full py-2.5 bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 hover:from-amber-400 hover:to-yellow-300 text-black font-black text-xs rounded-xl transition shadow-lg shadow-amber-500/20 flex items-center justify-center gap-2">
-                        <span>👑 Débloquer l'Accès Premium VIP (2 000 F) →</span>
+                        <span>👑 Débloquer le Pack Pro (2 000 F) →</span>
                     </button>
                 </div>
 
@@ -157,15 +196,15 @@
                     <div class="flex items-center space-x-2 bg-slate-900/90 p-1 rounded-xl border border-slate-800 w-full sm:w-auto">
                         <button id="btnTierCote2" onclick="selectTicketTier('cote2')" class="flex-1 sm:flex-initial py-2 px-4 rounded-lg text-xs font-black transition flex items-center justify-center gap-1.5 bg-emerald-500 text-black shadow">
                             <span>🎯 Cote 2.00</span>
-                            <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-black/20 font-normal">Duo Blindé (1 000 F)</span>
+                            <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-black/20 font-normal">Duo Blindé (Simple)</span>
                         </button>
                         <button id="btnTierCote3" onclick="selectTicketTier('cote3')" class="flex-1 sm:flex-initial py-2 px-4 rounded-lg text-xs font-black transition flex items-center justify-center gap-1.5 text-slate-400 hover:text-white">
                             <span>🚀 Cote 3.00</span>
-                            <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-800 font-normal">Trio Équilibré (VIP)</span>
+                            <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-800 font-normal">Trio (Pro)</span>
                         </button>
                         <button id="btnTierCote5" onclick="selectTicketTier('cote5')" class="flex-1 sm:flex-initial py-2 px-4 rounded-lg text-xs font-black transition flex items-center justify-center gap-1.5 text-slate-400 hover:text-white">
                             <span>⚡ Cote 5.00</span>
-                            <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-800 font-normal">Quatuor Expert (VIP)</span>
+                            <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-800 font-normal">Quatuor (Pro)</span>
                         </button>
                     </div>
                 </div>
@@ -188,19 +227,21 @@
                     </div>
                 </div>
 
-                <!-- Matchs Legs Grid -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="cote2LegsContainer"></div>
+                <!-- Matchs Legs Grid or Locked Message -->
+                <div id="ticketContentWrapper">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="cote2LegsContainer"></div>
+                </div>
             </div>
 
-            <!-- SECTION SÉLECTION PREMIUM : MATCHS DU JOUR & DE LA SEMAINE -->
+            <!-- SECTION ALTERNATIVES : 1 ALTERNATIVE (SIMPLE) OU 5 ALTERNATIVES (PRO) -->
             <div class="space-y-6 pt-2">
                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div>
                         <div class="flex items-center gap-2">
-                            <span class="text-xs font-mono font-black px-2.5 py-0.5 rounded bg-gradient-to-r from-amber-500 to-yellow-400 text-black shadow">👑 ACCÈS PREMIUM VIP (2 000 F)</span>
-                            <span class="text-xs text-amber-400 font-mono font-bold">Sélection Hebdomadaire</span>
+                            <span class="text-xs font-mono font-black px-2.5 py-0.5 rounded bg-gradient-to-r from-amber-500 to-yellow-400 text-black shadow">MATCHS EN ALTERNATIVE</span>
+                            <span class="text-xs text-amber-400 font-mono font-bold" id="alternativesHeaderBadge">1 Match (Simple) • 5 Matchs (Pro)</span>
                         </div>
-                        <h2 class="text-xl font-black text-white mt-1">Matchs du Jour & de la Semaine Très Bien Analysés</h2>
+                        <h2 class="text-xl font-black text-white mt-1">Matchs du Jour ou de la Semaine Très Bien Analysés</h2>
                         <p class="text-xs text-slate-400 mt-0.5">Décryptage tactique approfondi, xG projetés, indices de lisibilité, choix blindés et détection des pièges bookmakers.</p>
                     </div>
 
@@ -217,6 +258,20 @@
 
                 <!-- Premium Match Cards Container -->
                 <div class="space-y-4" id="premiumMatchesContainer"></div>
+
+                <!-- Pro Upsell Card when on Simple (unlocking 5 alternatives) -->
+                <div id="lockedAlternativesNotice" class="hidden p-5 rounded-2xl bg-gradient-to-r from-amber-950/20 via-slate-900 to-slate-900 border border-amber-500/40 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div class="space-y-1">
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs font-mono font-bold text-amber-400">🔒 4 AUTRES ALTERNATIVES DISPONIBLES</span>
+                            <span class="text-xs text-slate-300">Votre formule actuelle inclut 1 alternative.</span>
+                        </div>
+                        <p class="text-xs text-slate-400">Passez à l'Abonnement Pro (2 000 FCFA / mois) pour débloquer les 5 événements en alternative de la semaine et les cotes 3 et 5.</p>
+                    </div>
+                    <button onclick="openSubscriptionModal('PREMIUM')" class="px-4 py-2.5 bg-gradient-to-r from-amber-500 to-yellow-400 text-black text-xs font-black rounded-xl transition shadow shrink-0">
+                        👑 Débloquer les 5 Alternatives (2 000 F) →
+                    </button>
+                </div>
             </div>
 
         </section>
@@ -286,25 +341,34 @@
             </div>
         </section>
 
-        <!-- TAB 3: ANALYSEUR LIBRE DE MATCHS -->
+        <!-- TAB 3: ANALYSEUR MANUEL D'ÉQUIPES (5 ANALYSES/JOUR SIMPLE VS ILLIMITÉ PRO) -->
         <section id="tab-analyzer" class="tab-panel hidden space-y-6">
             <div class="bg-cardbg border border-slate-800 p-6 rounded-2xl space-y-6 shadow-xl">
-                <div>
-                    <div class="flex items-center gap-2">
-                        <span class="text-xs font-mono font-bold px-2 py-0.5 rounded bg-blue-500/20 text-blue-300 border border-blue-500/30">MENU À LA DEMANDE</span>
+                
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs font-mono font-bold px-2 py-0.5 rounded bg-blue-500/20 text-blue-300 border border-blue-500/30">SECTION MANUELLE DES ÉQUIPES</span>
+                        </div>
+                        <h2 class="text-xl font-black text-white mt-1">Donne le Match de Ton Choix : Analyse & Verdict Mathématique</h2>
+                        <p class="text-xs text-slate-400 mt-1">Tape n'importe quelles équipes : calcul de la lisibilité, choix blindé et détection du piège bookmaker.</p>
                     </div>
-                    <h2 class="text-xl font-black text-white mt-1">Donne le Match de Ton Choix : Analyse & Verdict Mathématique</h2>
-                    <p class="text-xs text-slate-400 mt-1">Tape n'importe quelles équipes : le modèle calcule la lisibilité, te donne le choix blindé et t'avertit si c'est un piège bookmaker.</p>
+
+                    <!-- Quota Pill -->
+                    <div id="manualAnalysisQuotaPill" class="bg-slate-900 border border-slate-800 px-3.5 py-2 rounded-xl text-center md:text-right shrink-0">
+                        <div class="text-[10px] font-mono uppercase text-slate-400">Quota Journalier</div>
+                        <div class="text-sm font-black font-mono text-emerald-400" id="quotaDisplayTag">5 / 5 analyses restantes</div>
+                    </div>
                 </div>
 
                 <div class="bg-slate-900/90 p-5 rounded-xl border border-slate-800 space-y-4">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label class="text-xs font-mono text-slate-300 block mb-1">Équipe Domicile</label>
+                            <label class="text-xs font-mono text-slate-300 block mb-1">Équipe Domicile (manuelle)</label>
                             <input type="text" id="inputHomeTeam" value="Real Madrid" class="w-full bg-slate-950 border border-slate-700 text-sm rounded-lg px-3 py-2.5 text-white font-medium focus:outline-none focus:border-emerald-500">
                         </div>
                         <div>
-                            <label class="text-xs font-mono text-slate-300 block mb-1">Équipe Extérieur</label>
+                            <label class="text-xs font-mono text-slate-300 block mb-1">Équipe Extérieur (manuelle)</label>
                             <input type="text" id="inputAwayTeam" value="Chelsea" class="w-full bg-slate-950 border border-slate-700 text-sm rounded-lg px-3 py-2.5 text-white font-medium focus:outline-none focus:border-emerald-500">
                         </div>
                     </div>
@@ -318,7 +382,7 @@
                     </div>
 
                     <div class="pt-2">
-                        <button onclick="runCustomAnalysis()" class="w-full py-3 bg-gradient-to-r from-emerald-500 via-teal-400 to-cyan-400 hover:from-emerald-400 hover:to-cyan-300 text-black font-black text-sm rounded-lg transition shadow-lg shadow-emerald-500/20">
+                        <button onclick="runCustomAnalysis()" id="btnRunAnalysis" class="w-full py-3 bg-gradient-to-r from-emerald-500 via-teal-400 to-cyan-400 hover:from-emerald-400 hover:to-cyan-300 text-black font-black text-sm rounded-lg transition shadow-lg shadow-emerald-500/20">
                             ⚡ Analyser ce Match et Rendre le Verdict Impartial
                         </button>
                     </div>
@@ -330,26 +394,97 @@
 
     </main>
 
+    <!-- AUTH MODAL (INSCRIPTION 3 JOURS GRATUITS & CONNEXION) -->
+    <div id="authModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-cardbg border border-slate-700 w-full max-w-md rounded-2xl p-6 space-y-5 shadow-2xl relative">
+            <button onclick="closeAuthModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white font-mono text-lg">✕</button>
+
+            <!-- Modal Auth Tabs -->
+            <div class="flex border-b border-slate-800 pb-2 space-x-3">
+                <button type="button" id="tabBtnRegister" onclick="switchAuthTab('register')" class="text-sm font-black text-emerald-400 border-b-2 border-emerald-500 pb-1">
+                    🎁 Inscription (3 Jours Gratuits)
+                </button>
+                <button type="button" id="tabBtnLogin" onclick="switchAuthTab('login')" class="text-sm font-bold text-slate-400 hover:text-white pb-1">
+                    Connexion
+                </button>
+            </div>
+
+            <!-- Inscription Form -->
+            <form id="formRegister" onsubmit="handleRegisterSubmit(event)" class="space-y-3.5">
+                <div>
+                    <label class="text-xs font-mono text-slate-300 block mb-1">Votre Adresse Email :</label>
+                    <input type="email" id="regEmail" required placeholder="nom@exemple.com" class="w-full bg-slate-950 border border-slate-700 text-xs rounded-xl px-3 py-2.5 text-white focus:outline-none focus:border-emerald-500 font-sans">
+                </div>
+
+                <div>
+                    <label class="text-xs font-mono text-slate-300 block mb-1">Mot de passe :</label>
+                    <input type="password" id="regPassword" required minlength="4" placeholder="••••••••" class="w-full bg-slate-950 border border-slate-700 text-xs rounded-xl px-3 py-2.5 text-white focus:outline-none focus:border-emerald-500">
+                </div>
+
+                <div class="p-3 bg-emerald-950/30 rounded-xl border border-emerald-500/30 text-xs text-emerald-300 leading-relaxed">
+                    ✨ <strong>3 jours d'accès complet offert</strong> immédiatement à l'inscription. Ensuite, vous choisissez librement votre formule : <strong>1 000 F/mois (Simple)</strong> ou <strong>2 000 F/mois (Pro)</strong>.
+                </div>
+
+                <button type="submit" id="btnSubmitRegister" class="w-full py-3 bg-emerald-500 hover:bg-emerald-400 text-black font-black text-xs rounded-xl transition shadow-lg shadow-emerald-500/20">
+                    Créer mon Compte & Activer mes 3 Jours Gratuits →
+                </button>
+                <div id="authRegisterResult" class="text-xs text-slate-300"></div>
+            </form>
+
+            <!-- Connexion Form -->
+            <form id="formLogin" onsubmit="handleLoginSubmit(event)" class="space-y-3.5 hidden">
+                <div>
+                    <label class="text-xs font-mono text-slate-300 block mb-1">Votre Adresse Email :</label>
+                    <input type="email" id="loginEmail" required placeholder="nom@exemple.com" class="w-full bg-slate-950 border border-slate-700 text-xs rounded-xl px-3 py-2.5 text-white focus:outline-none focus:border-emerald-500 font-sans">
+                </div>
+
+                <div>
+                    <label class="text-xs font-mono text-slate-300 block mb-1">Mot de passe :</label>
+                    <input type="password" id="loginPassword" required placeholder="••••••••" class="w-full bg-slate-950 border border-slate-700 text-xs rounded-xl px-3 py-2.5 text-white focus:outline-none focus:border-emerald-500">
+                </div>
+
+                <button type="submit" id="btnSubmitLogin" class="w-full py-3 bg-emerald-500 hover:bg-emerald-400 text-black font-black text-xs rounded-xl transition shadow-lg shadow-emerald-500/20">
+                    Se Connecter →
+                </button>
+                <div id="authLoginResult" class="text-xs text-slate-300"></div>
+            </form>
+
+            <!-- Fast Demo Accounts -->
+            <div class="pt-2 border-t border-slate-800 text-center">
+                <span class="text-[11px] text-slate-500 block mb-1.5">Comptes démo pré-configurés pour tester :</span>
+                <div class="flex items-center justify-center gap-2">
+                    <button type="button" onclick="quickFillLogin('simple@demo.com', 'simple123password')" class="px-2 py-1 rounded bg-slate-900 border border-slate-800 text-[11px] text-slate-300 hover:text-white">
+                        Compte Simple (1 000 F)
+                    </button>
+                    <button type="button" onclick="quickFillLogin('pro@demo.com', 'pro123password')" class="px-2 py-1 rounded bg-amber-950/40 border border-amber-500/30 text-[11px] text-amber-300 hover:text-amber-200">
+                        Compte Pro VIP (2 000 F)
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
     <!-- SUBSCRIPTION CHECKOUT MODAL (Wave, Orange, MTN, Carte) -->
     <div id="subscriptionModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
         <div class="bg-cardbg border border-slate-700 w-full max-w-md rounded-2xl p-6 space-y-5 shadow-2xl relative">
             <button onclick="closeSubscriptionModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white font-mono text-lg">✕</button>
 
             <div>
-                <span class="text-xs font-mono font-black px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40 uppercase">Paiement Sécurisé Mobile Money</span>
+                <span class="text-xs font-mono font-black px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40 uppercase">Paiement Mobile Money</span>
                 <h3 class="text-lg font-black text-white mt-1" id="modalPlanTitle">Activer votre Abonnement</h3>
-                <p class="text-xs text-slate-400 mt-0.5">Activation instantanée de votre accès dès confirmation du paiement.</p>
+                <p class="text-xs text-slate-400 mt-0.5">3 jours d'essai gratuits terminés ou upgrade immédiat.</p>
             </div>
 
             <!-- Plan Selector in Modal -->
             <div class="grid grid-cols-2 gap-2 p-1 bg-slate-900 rounded-xl border border-slate-800">
                 <button type="button" id="modalBtnPlanSimple" onclick="setModalPlan('SIMPLE')" class="py-2 px-3 rounded-lg text-xs font-bold transition text-slate-400">
-                    <div>Simple</div>
-                    <div class="font-mono font-black text-white">1 000 FCFA</div>
+                    <div>Simple (Cote 2)</div>
+                    <div class="font-mono font-black text-white">1 000 FCFA / m</div>
                 </button>
                 <button type="button" id="modalBtnPlanPremium" onclick="setModalPlan('PREMIUM')" class="py-2 px-3 rounded-lg text-xs font-bold transition bg-gradient-to-r from-amber-500 to-yellow-400 text-black shadow">
-                    <div>Premium VIP</div>
-                    <div class="font-mono font-black text-black">2 000 FCFA</div>
+                    <div>Pro VIP (2, 3, 5)</div>
+                    <div class="font-mono font-black text-black">2 000 FCFA / m</div>
                 </button>
             </div>
 
@@ -371,7 +506,7 @@
                 </div>
 
                 <div class="p-3 bg-slate-950 rounded-xl border border-slate-800 flex justify-between items-center text-xs">
-                    <span class="text-slate-400">Montant à régler :</span>
+                    <span class="text-slate-400">Montant de la formule :</span>
                     <span class="font-black text-amber-400 text-base font-mono" id="modalAmountDisplay">2 000 FCFA / mois</span>
                 </div>
 
@@ -386,7 +521,7 @@
 
     <footer class="max-w-7xl mx-auto px-4 py-8 border-t border-slate-800/80 text-center text-xs text-slate-500 space-y-1">
         <p>DuoSecur Pro — Architecture Décisionnelle & Modélisation Mathématique de Cotes 2.00, 3.00 & 5.00.</p>
-        <p class="font-mono text-slate-600">Abonnement Simple 1 000 F • Abonnement Premium VIP 2 000 F • Passerelle Mobile Money</p>
+        <p class="font-mono text-slate-600">3 Jours Gratuits • Simple 1 000 F (Cote 2, 1 alternative, 5 analyses/j) • Pro 2 000 F (Cotes 2, 3, 5, 5 alternatives, illimité)</p>
     </footer>
 
     <script src="/static/app.js"></script>
