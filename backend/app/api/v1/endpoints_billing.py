@@ -14,7 +14,7 @@ from app.core.database import db
 router = APIRouter(prefix="/billing", tags=["Subscriptions & Monetization"])
 
 
-@router.get("/plans", response_model=List[PlanInfo])
+@router.get("/plans")
 async def list_subscription_plans():
     """List all available public tiers and pricing."""
     return list(AVAILABLE_PLANS.values())

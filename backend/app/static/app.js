@@ -1,12 +1,13 @@
 /**
  * DuoSecur Pro — Client Controller
- * Multi-Tier Combos (Cote 2, Cote 3, Cote 5) & Premium Match Analyses
+ * Multi-Tier Combos (Cote 2, Cote 3, Cote 5), Weekly Premium Matches & Mobile Money Subscriptions
  */
 
 let allTicketsData = {};
 let allPremiumMatches = [];
 let activeTier = 'cote2';
 let activeLeagueFilter = 'ALL';
+let activeModalPlan = 'PREMIUM';
 
 function switchTab(tabId) {
     document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.add('hidden'));
@@ -136,7 +137,6 @@ async function loadDailyCote2() {
 function filterPremiumMatches(league) {
     activeLeagueFilter = league;
 
-    // Update filter buttons appearance
     document.querySelectorAll('.premium-filter-btn').forEach(btn => {
         if (btn.innerText.trim().toUpperCase() === league.toUpperCase() || (league === 'ALL' && btn.innerText.trim() === 'Tous')) {
             btn.className = "premium-filter-btn px-2.5 py-1 rounded-lg bg-emerald-500 text-black font-bold";
@@ -225,6 +225,98 @@ function renderPremiumMatches(list) {
             </div>
         `;
     }).join('');
+}
+
+// --- SUBSCRIPTION CHECKOUT MODAL LOGIC ---
+function openSubscriptionModal(defaultPlan = 'PREMIUM') {
+    const modal = document.getElementById('subscriptionModal');
+    if (!modal) return;
+    setModalPlan(defaultPlan);
+    modal.classList.remove('hidden');
+}
+
+function closeSubscriptionModal() {
+    const modal = document.getElementById('subscriptionModal');
+    if (modal) modal.classList.add('hidden');
+    const resultBox = document.getElementById('modalResultBox');
+    if (resultBox) resultBox.innerHTML = '';
+}
+
+function setModalPlan(plan) {
+    activeModalPlan = plan;
+    const btnSimple = document.getElementById('modalBtnPlanSimple');
+    const btnPremium = document.getElementById('modalBtnPlanPremium');
+    const titleEl = document.getElementById('modalPlanTitle');
+    const amountEl = document.getElementById('modalAmountDisplay');
+
+    if (plan === 'SIMPLE') {
+        if (btnSimple) btnSimple.className = "py-2 px-3 rounded-lg text-xs font-bold transition bg-emerald-500 text-black shadow";
+        if (btnPremium) btnPremium.className = "py-2 px-3 rounded-lg text-xs font-bold transition text-slate-400";
+        if (titleEl) titleEl.innerText = "Activer l'Abonnement Simple";
+        if (amountEl) amountEl.innerText = "1 000 FCFA / mois";
+    } else {
+        if (btnPremium) btnPremium.className = "py-2 px-3 rounded-lg text-xs font-bold transition bg-gradient-to-r from-amber-500 to-yellow-400 text-black shadow";
+        if (btnSimple) btnSimple.className = "py-2 px-3 rounded-lg text-xs font-bold transition text-slate-400";
+        if (titleEl) titleEl.innerText = "Activer l'Abonnement Premium VIP";
+        if (amountEl) amountEl.innerText = "2 000 FCFA / mois";
+    }
+}
+
+async function submitSubscriptionCheckout() {
+    const provider = document.getElementById('modalProviderSelect').value;
+    const contact = document.getElementById('modalCustomerContact').value.trim();
+    const resultBox = document.getElementById('modalResultBox');
+    const submitBtn = document.getElementById('modalSubmitBtn');
+
+    if (!contact) {
+        alert("Veuillez renseigner votre numéro Mobile Money ou email.");
+        return;
+    }
+
+    const planPriceText = activeModalPlan === 'SIMPLE' ? "1 000 FCFA" : "2 000 FCFA";
+    resultBox.innerHTML = `<div class="p-3 bg-slate-950 rounded-xl border border-slate-800 text-slate-400 font-mono">Connexion sécurisée avec l'opérateur ${provider.toUpperCase()} pour ${planPriceText}...</div>`;
+    submitBtn.disabled = true;
+
+    try {
+        const res = await fetch('/api/v1/payments/checkout', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                customer_phone_or_email: contact,
+                provider_id: provider,
+                plan_tier: activeModalPlan,
+                currency: "FCFA"
+            })
+        });
+        const data = await res.json();
+
+        // Simulate instant webhook confirmation
+        const confirmRes = await fetch(`/api/v1/payments/simulate-webhook/${data.transaction_id}?plan_tier=${activeModalPlan}`, { method: 'POST' });
+        const confirmData = await confirmRes.json();
+
+        resultBox.innerHTML = `
+            <div class="p-4 bg-emerald-950/40 border border-emerald-500/50 rounded-xl text-emerald-300 space-y-2 mt-2">
+                <div class="font-black text-sm flex items-center gap-1.5 text-white">
+                    <span>✅ Paiement Confirmé avec Succès !</span>
+                </div>
+                <div class="text-xs">
+                    Formule activée : <strong class="text-amber-300">${confirmData.plan_name}</strong>
+                </div>
+                <div class="text-xs text-slate-300">
+                    Débit de <strong>${data.amount.toLocaleString()} FCFA</strong> effectué via <strong>${data.provider}</strong>.
+                </div>
+                <div class="text-[11px] font-mono text-emerald-400 pt-1 border-t border-emerald-500/30">
+                    Accès actif pour 30 jours sur votre compte : ${contact}
+                </div>
+            </div>
+        `;
+
+        submitBtn.disabled = false;
+
+    } catch (err) {
+        resultBox.innerHTML = `<div class="p-3 bg-rose-950/40 border border-rose-500/40 rounded-xl text-rose-300 text-xs">Erreur lors de la validation du paiement.</div>`;
+        submitBtn.disabled = false;
+    }
 }
 
 function setTeams(home, away) {

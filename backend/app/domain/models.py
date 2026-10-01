@@ -11,6 +11,8 @@ from datetime import datetime
 
 class SubscriptionTier(str, Enum):
     FREE = "FREE"
+    SIMPLE = "SIMPLE"
+    PREMIUM = "PREMIUM"
     PRO = "PRO"
     SYNDICATE = "SYNDICATE"
 

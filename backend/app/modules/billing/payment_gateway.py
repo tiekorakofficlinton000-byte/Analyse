@@ -1,11 +1,15 @@
 """
 QuantBet Engine - Multi-Provider Payment Gateway
-Supports Mobile Money (Wave, Orange Money, MTN, Moov), Stripe/Cards, and Crypto.
+Supports Mobile Money (Wave, Orange Money, MTN MoMo, Moov), Stripe/Cards, and Crypto.
+Configured for:
+- Abonnement Simple : 1 000 FCFA / mois
+- Abonnement Premium : 2 000 FCFA / mois
 """
 
 from typing import Dict, Any, List
 import uuid
 from datetime import datetime, timezone
+from app.modules.billing.plan_manager import AVAILABLE_PLANS
 
 
 SUPPORTED_PROVIDERS: List[Dict[str, Any]] = [
@@ -55,15 +59,17 @@ SUPPORTED_PROVIDERS: List[Dict[str, Any]] = [
 def initiate_subscription_payment(
     customer_phone_or_email: str,
     provider_id: str,
-    plan_tier: str = "PRO",
+    plan_tier: str = "PREMIUM",
     currency: str = "FCFA"
 ) -> Dict[str, Any]:
     """
-    Creates a payment checkout intent for the subscription.
+    Creates a payment checkout intent for the chosen subscription plan.
     """
     provider = next((p for p in SUPPORTED_PROVIDERS if p["id"] == provider_id), SUPPORTED_PROVIDERS[0])
-    
-    amount = 15000 if currency == "FCFA" else 22.90
+    tier_key = plan_tier.upper()
+    plan = AVAILABLE_PLANS.get(tier_key, AVAILABLE_PLANS["PREMIUM"])
+
+    amount = plan["price_fcfa_month"] if currency == "FCFA" else plan["price_eur_month"]
     tx_id = f"tx-{uuid.uuid4().hex[:10]}"
 
     return {
@@ -71,23 +77,27 @@ def initiate_subscription_payment(
         "status": "PENDING_CONFIRMATION",
         "customer": customer_phone_or_email,
         "provider": provider["name"],
-        "plan_tier": plan_tier,
+        "plan_tier": plan["tier"],
+        "plan_name": plan["name"],
         "amount": amount,
         "currency": currency,
-        "instructions": f"Veuillez valider le débit de {amount:,} {currency} sur votre compte {provider['name']} pour débloquer votre accès VIP.",
+        "instructions": f"Veuillez valider le débit de {amount:,} {currency} sur votre compte {provider['name']} pour activer votre {plan['name']}.",
         "created_at": datetime.now(timezone.utc).isoformat()
     }
 
 
-def confirm_subscription_payment(transaction_id: str) -> Dict[str, Any]:
+def confirm_subscription_payment(transaction_id: str, plan_tier: str = "PREMIUM") -> Dict[str, Any]:
     """
     Simulates webhook callback from Wave / Orange Money / Stripe activating the subscriber.
     """
+    tier_key = plan_tier.upper()
+    plan = AVAILABLE_PLANS.get(tier_key, AVAILABLE_PLANS["PREMIUM"])
+
     return {
         "transaction_id": transaction_id,
         "status": "SUCCESS_ACTIVATED",
-        "activated_tier": "PRO",
+        "activated_tier": plan["tier"],
+        "plan_name": plan["name"],
         "validity_days": 30,
-        "vip_access_link": "https://duosecur.io/vip-access",
         "confirmed_at": datetime.now(timezone.utc).isoformat()
     }

@@ -36,8 +36,17 @@
                     <div class="flex items-center space-x-2">
                         <span class="font-black text-lg tracking-tight bg-gradient-to-r from-white via-slate-100 to-emerald-400 bg-clip-text text-transparent">DUOSECUR PRO</span>
                     </div>
-                    <p class="text-[11px] text-slate-400">Aide à la Décision Quantitative & Analyse Prédictive</p>
+                    <p class="text-[11px] text-slate-400">Aide à la Décision Quantitative & Cotes 2 • 3 • 5</p>
                 </div>
+            </div>
+
+            <!-- Header Action Button -->
+            <div class="flex items-center space-x-2">
+                <button onclick="openSubscriptionModal('PREMIUM')" class="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-400 hover:from-amber-400 hover:to-yellow-300 text-black text-xs font-black shadow-lg shadow-amber-500/20 transition flex items-center gap-1.5">
+                    <span>👑</span>
+                    <span class="hidden sm:inline">Rejoindre le VIP</span>
+                    <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-black/20">Dès 1 000 F</span>
+                </button>
             </div>
         </div>
     </header>
@@ -61,26 +70,102 @@
         <!-- TAB 1: TICKETS DU JOUR (COTE 2, 3, 5) & SÉLECTION PREMIUM -->
         <section id="tab-cote2" class="tab-panel space-y-8">
             
-            <!-- SECTION TICKETS DU JOUR -->
+            <!-- GRILLE DES TARIFS : ABONNEMENT SIMPLE (1 000 F) & PREMIUM (2 000 F) -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                
+                <!-- Plan Simple : 1 000 FCFA / mois -->
+                <div class="bg-cardbg border border-slate-800 hover:border-emerald-500/40 rounded-2xl p-5 flex flex-col justify-between transition shadow-lg relative">
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-mono font-bold px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 uppercase">Abonnement Simple</span>
+                            <span class="text-[11px] font-mono text-slate-400 bg-slate-900 px-2 py-0.5 rounded border border-slate-800">30 Jours</span>
+                        </div>
+                        <div>
+                            <div class="flex items-baseline gap-1.5">
+                                <span class="text-3xl font-black text-white font-mono">1 000 FCFA</span>
+                                <span class="text-xs text-slate-400">/ mois</span>
+                            </div>
+                            <p class="text-xs text-slate-400 mt-1">L'essentiel pour sécuriser ses paris et doubler sereinement sans risque.</p>
+                        </div>
+                        <ul class="text-xs text-slate-300 space-y-2 pt-2 border-t border-slate-800">
+                            <li class="flex items-center gap-2 text-emerald-400">
+                                <span>✓</span> <span class="text-white"><strong>Ticket Cote 2.00 Sécurisée du Jour</strong> (Duo Blindé)</span>
+                            </li>
+                            <li class="flex items-center gap-2 text-emerald-400">
+                                <span>✓</span> <span class="text-white">Accès aux Marchés les Plus Lisibles (Le Filtre Anti-Aléa)</span>
+                            </li>
+                            <li class="flex items-center gap-2 text-slate-500">
+                                <span>✕</span> <span class="line-through">Tickets Cote 3.00 & Cote 5.00</span>
+                            </li>
+                            <li class="flex items-center gap-2 text-slate-500">
+                                <span>✕</span> <span class="line-through">Matchs de la semaine analysés en profondeur</span>
+                            </li>
+                        </ul>
+                    </div>
+                    <button onclick="openSubscriptionModal('SIMPLE')" class="mt-5 w-full py-2.5 bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs rounded-xl transition border border-slate-700 flex items-center justify-center gap-2">
+                        <span>Souscrire à la Formule Simple (1 000 F) →</span>
+                    </button>
+                </div>
+
+                <!-- Plan Premium VIP : 2 000 FCFA / mois -->
+                <div class="bg-gradient-to-br from-amber-950/30 via-slate-900 to-cardbg border border-amber-500/50 rounded-2xl p-5 flex flex-col justify-between transition shadow-xl relative">
+                    <div class="absolute -top-3 right-5 bg-gradient-to-r from-amber-500 to-yellow-400 text-black text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full shadow-md">
+                        Recommandé • Meilleure Valeur
+                    </div>
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-mono font-black px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40 uppercase">Abonnement Premium VIP</span>
+                            <span class="text-[11px] font-mono text-amber-400 bg-amber-950/40 px-2 py-0.5 rounded border border-amber-500/30">Accès Total</span>
+                        </div>
+                        <div>
+                            <div class="flex items-baseline gap-1.5">
+                                <span class="text-3xl font-black text-amber-400 font-mono">2 000 FCFA</span>
+                                <span class="text-xs text-slate-400">/ mois</span>
+                            </div>
+                            <p class="text-xs text-slate-300 mt-1">L'arsenal complet : toutes les cotes et les chocs décortiqués par les modèles.</p>
+                        </div>
+                        <ul class="text-xs text-slate-200 space-y-2 pt-2 border-t border-slate-800">
+                            <li class="flex items-center gap-2 text-amber-400">
+                                <span>★</span> <span><strong>Tout l'Abonnement Simple inclus</strong> (Cote 2.00)</span>
+                            </li>
+                            <li class="flex items-center gap-2 text-amber-400">
+                                <span>★</span> <span><strong>Tickets Cote 3.00 & Cote 5.00</strong> débloqués au quotidien</span>
+                            </li>
+                            <li class="flex items-center gap-2 text-amber-400">
+                                <span>★</span> <span><strong>Matchs de la Semaine très bien analysés</strong> (xG, choix blindés, pièges)</span>
+                            </li>
+                            <li class="flex items-center gap-2 text-amber-400">
+                                <span>★</span> <span>Analyseur libre de matchs illimité pour toutes les affiches</span>
+                            </li>
+                        </ul>
+                    </div>
+                    <button onclick="openSubscriptionModal('PREMIUM')" class="mt-5 w-full py-2.5 bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 hover:from-amber-400 hover:to-yellow-300 text-black font-black text-xs rounded-xl transition shadow-lg shadow-amber-500/20 flex items-center justify-center gap-2">
+                        <span>👑 Débloquer l'Accès Premium VIP (2 000 F) →</span>
+                    </button>
+                </div>
+
+            </div>
+
+            <!-- SECTION TICKETS DU JOUR (COTE 2 • COTE 3 • COTE 5) -->
             <div class="bg-cardbg border border-slate-800 p-6 rounded-2xl relative shadow-xl space-y-6">
                 
                 <!-- Ticket Tier Selector (Cote 2 / 3 / 5) -->
                 <div class="flex flex-col sm:flex-row items-center justify-between gap-4 border-b border-slate-800 pb-4">
                     <div>
-                        <span class="text-xs font-mono font-bold text-slate-400 uppercase">Choisissez votre profil de cote :</span>
+                        <span class="text-xs font-mono font-bold text-slate-400 uppercase">Sélectionnez la cote souhaitée :</span>
                     </div>
                     <div class="flex items-center space-x-2 bg-slate-900/90 p-1 rounded-xl border border-slate-800 w-full sm:w-auto">
                         <button id="btnTierCote2" onclick="selectTicketTier('cote2')" class="flex-1 sm:flex-initial py-2 px-4 rounded-lg text-xs font-black transition flex items-center justify-center gap-1.5 bg-emerald-500 text-black shadow">
                             <span>🎯 Cote 2.00</span>
-                            <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-black/20 font-normal">Duo Blindé</span>
+                            <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-black/20 font-normal">Duo Blindé (1 000 F)</span>
                         </button>
                         <button id="btnTierCote3" onclick="selectTicketTier('cote3')" class="flex-1 sm:flex-initial py-2 px-4 rounded-lg text-xs font-black transition flex items-center justify-center gap-1.5 text-slate-400 hover:text-white">
                             <span>🚀 Cote 3.00</span>
-                            <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-800 font-normal">Trio Équilibré</span>
+                            <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-800 font-normal">Trio Équilibré (VIP)</span>
                         </button>
                         <button id="btnTierCote5" onclick="selectTicketTier('cote5')" class="flex-1 sm:flex-initial py-2 px-4 rounded-lg text-xs font-black transition flex items-center justify-center gap-1.5 text-slate-400 hover:text-white">
                             <span>⚡ Cote 5.00</span>
-                            <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-800 font-normal">Quatuor Expert</span>
+                            <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-800 font-normal">Quatuor Expert (VIP)</span>
                         </button>
                     </div>
                 </div>
@@ -112,8 +197,8 @@
                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div>
                         <div class="flex items-center gap-2">
-                            <span class="text-xs font-mono font-black px-2.5 py-0.5 rounded bg-gradient-to-r from-amber-500 to-yellow-400 text-black shadow">👑 SÉLECTION PREMIUM</span>
-                            <span class="text-xs text-amber-400 font-mono font-bold">Chocs de la Semaine Décodés</span>
+                            <span class="text-xs font-mono font-black px-2.5 py-0.5 rounded bg-gradient-to-r from-amber-500 to-yellow-400 text-black shadow">👑 ACCÈS PREMIUM VIP (2 000 F)</span>
+                            <span class="text-xs text-amber-400 font-mono font-bold">Sélection Hebdomadaire</span>
                         </div>
                         <h2 class="text-xl font-black text-white mt-1">Matchs du Jour & de la Semaine Très Bien Analysés</h2>
                         <p class="text-xs text-slate-400 mt-0.5">Décryptage tactique approfondi, xG projetés, indices de lisibilité, choix blindés et détection des pièges bookmakers.</p>
@@ -245,9 +330,63 @@
 
     </main>
 
+    <!-- SUBSCRIPTION CHECKOUT MODAL (Wave, Orange, MTN, Carte) -->
+    <div id="subscriptionModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-cardbg border border-slate-700 w-full max-w-md rounded-2xl p-6 space-y-5 shadow-2xl relative">
+            <button onclick="closeSubscriptionModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white font-mono text-lg">✕</button>
+
+            <div>
+                <span class="text-xs font-mono font-black px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40 uppercase">Paiement Sécurisé Mobile Money</span>
+                <h3 class="text-lg font-black text-white mt-1" id="modalPlanTitle">Activer votre Abonnement</h3>
+                <p class="text-xs text-slate-400 mt-0.5">Activation instantanée de votre accès dès confirmation du paiement.</p>
+            </div>
+
+            <!-- Plan Selector in Modal -->
+            <div class="grid grid-cols-2 gap-2 p-1 bg-slate-900 rounded-xl border border-slate-800">
+                <button type="button" id="modalBtnPlanSimple" onclick="setModalPlan('SIMPLE')" class="py-2 px-3 rounded-lg text-xs font-bold transition text-slate-400">
+                    <div>Simple</div>
+                    <div class="font-mono font-black text-white">1 000 FCFA</div>
+                </button>
+                <button type="button" id="modalBtnPlanPremium" onclick="setModalPlan('PREMIUM')" class="py-2 px-3 rounded-lg text-xs font-bold transition bg-gradient-to-r from-amber-500 to-yellow-400 text-black shadow">
+                    <div>Premium VIP</div>
+                    <div class="font-mono font-black text-black">2 000 FCFA</div>
+                </button>
+            </div>
+
+            <!-- Provider Selection -->
+            <div class="space-y-3">
+                <div>
+                    <label class="text-xs font-mono text-slate-300 block mb-1">Moyen de paiement :</label>
+                    <select id="modalProviderSelect" class="w-full bg-slate-950 border border-slate-700 text-xs rounded-xl px-3 py-2.5 text-white font-medium focus:outline-none focus:border-amber-500">
+                        <option value="wave">🌊 Wave Mobile Money (CI, Sénégal, UEMOA)</option>
+                        <option value="orange_money">🟠 Orange Money (CI, Sénégal, Mali, etc.)</option>
+                        <option value="mtn_momo">🟡 MTN MoMo (CI, Bénin, Cameroun, etc.)</option>
+                        <option value="stripe">💳 Carte Bancaire (Visa / Mastercard)</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="text-xs font-mono text-slate-300 block mb-1">Votre numéro Mobile Money ou email :</label>
+                    <input type="text" id="modalCustomerContact" value="+225 07 00 00 00 00" class="w-full bg-slate-950 border border-slate-700 text-xs rounded-xl px-3 py-2.5 text-white font-mono focus:outline-none focus:border-amber-500">
+                </div>
+
+                <div class="p-3 bg-slate-950 rounded-xl border border-slate-800 flex justify-between items-center text-xs">
+                    <span class="text-slate-400">Montant à régler :</span>
+                    <span class="font-black text-amber-400 text-base font-mono" id="modalAmountDisplay">2 000 FCFA / mois</span>
+                </div>
+
+                <button onclick="submitSubscriptionCheckout()" id="modalSubmitBtn" class="w-full py-3 bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 hover:from-amber-400 hover:to-yellow-300 text-black font-black text-xs rounded-xl transition shadow-lg shadow-amber-500/20">
+                    Valider le Paiement Sécurisé →
+                </button>
+
+                <div id="modalResultBox" class="text-xs text-slate-300"></div>
+            </div>
+        </div>
+    </div>
+
     <footer class="max-w-7xl mx-auto px-4 py-8 border-t border-slate-800/80 text-center text-xs text-slate-500 space-y-1">
         <p>DuoSecur Pro — Architecture Décisionnelle & Modélisation Mathématique de Cotes 2.00, 3.00 & 5.00.</p>
-        <p class="font-mono text-slate-600">Dixon-Coles Bivariate • Safe Combos Builder • Quantitative Analysis</p>
+        <p class="font-mono text-slate-600">Abonnement Simple 1 000 F • Abonnement Premium VIP 2 000 F • Passerelle Mobile Money</p>
     </footer>
 
     <script src="/static/app.js"></script>
