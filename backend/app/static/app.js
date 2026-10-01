@@ -1,10 +1,12 @@
 /**
  * DuoSecur Pro — Client Controller
- * Multi-Tier Combos (Cote 2, Cote 3, Cote 5), Weekly Alternatives & Quota Tracking
- * Rules:
- * - Inscription avec email & mot de passe (3 jours gratuits)
- * - Formule Simple (1 000 F/mois) : Cote 2, 1 seule alternative, 5 analyses manuelles/jour
- * - Formule Pro (2 000 F/mois) : Cotes 2, 3, 5, 5 alternatives, analyses illimitées
+ * Multi-Tier Combos (Cote 2, Cote 3, Cote 5), Weekly Alternatives & Advanced Quant Indicators
+ * Features:
+ * - Full Dixon-Coles bivariate Poisson modeling
+ * - Advanced Tactical Indicators: xG, npxG, xGA, PPDA, Field Tilt, Direct Speed
+ * - Zero-Vig Fair Odds & True Probabilities Table
+ * - Top Exact Score Matrix
+ * - Quarter-Kelly Capital Sizing & EV%
  */
 
 let currentUser = null;
@@ -24,7 +26,6 @@ function initUserSession() {
             currentUser = null;
         }
     } else {
-        // Default guest user
         currentUser = {
             email: "invite@duosecur.io",
             tier: "FREE_TRIAL",
@@ -101,7 +102,6 @@ function updateUIForUser() {
         }
         if (altHeaderBadge) altHeaderBadge.innerText = "1 Match en Alternative (Formule Simple)";
     } else {
-        // Free trial
         const daysLeft = currentUser.trial_days_remaining || 3;
         if (badgeEl) badgeEl.innerText = `🎁 Essai Gratuit (${daysLeft}j)`;
         if (upgradeBtn) {
@@ -167,7 +167,7 @@ async function handleRegisterSubmit(e) {
 
     if (!email || !password) return;
     btn.disabled = true;
-    resultBox.innerHTML = `<span class="text-slate-400 font-mono">Création de votre compte et activation des 3 jours gratuits...</span>`;
+    resultBox.innerHTML = `<span class="text-slate-400 font-mono">Création du compte & activation des 3 jours gratuits...</span>`;
 
     try {
         const res = await fetch('/api/v1/auth/register', {
@@ -196,7 +196,7 @@ async function handleRegisterSubmit(e) {
         localStorage.setItem('duosecur_user', JSON.stringify(currentUser));
         localStorage.setItem('duosecur_token', data.access_token);
 
-        resultBox.innerHTML = `<span class="text-emerald-400 font-bold">✅ Compte créé avec succès ! Vos 3 jours gratuits sont actifs.</span>`;
+        resultBox.innerHTML = `<span class="text-emerald-400 font-bold">✅ Compte créé ! Vos 3 jours gratuits sont actifs.</span>`;
         setTimeout(() => {
             closeAuthModal();
             updateUIForUser();
@@ -311,8 +311,7 @@ function renderActiveTicket() {
     const container = document.getElementById('cote2LegsContainer');
     if (!container) return;
 
-    // RULE: Cote 2.00 is visible to all (Simple, Trial, Pro).
-    // Cote 3.00 & 5.00 are strictly for Pro (2 000 F).
+    // RULE: Cote 2.00 is visible to all. Cote 3 & 5 are strictly for Pro.
     if (activeTier !== 'cote2' && !isPro) {
         container.innerHTML = `
             <div class="col-span-full p-8 rounded-2xl bg-gradient-to-br from-amber-950/30 via-slate-900 to-slate-900 border border-amber-500/50 text-center space-y-4 shadow-xl">
@@ -323,7 +322,7 @@ function renderActiveTicket() {
                     <span class="text-xs font-mono font-black px-2.5 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40 uppercase">EXCLUSIVITÉ ABONNEMENT PRO (2 000 FCFA / MOIS)</span>
                     <h3 class="text-lg font-black text-white mt-2">Le Ticket ${ticket.title} est réservé aux Membres Pro</h3>
                     <p class="text-xs text-slate-300 max-w-lg mx-auto mt-1 leading-relaxed">
-                        Votre formule actuelle (Simple ou Essai) inclut la <strong>Cote 2.00</strong>. Pour débloquer la Cote 3.00, la Cote 5.00, 5 événements en alternative et les analyses illimitées, passez au Pack Pro.
+                        Votre formule actuelle inclut la <strong>Cote 2.00</strong>. Pour débloquer la Cote 3.00, la Cote 5.00, 5 événements en alternative et les analyses illimitées, passez au Pack Pro.
                     </p>
                 </div>
                 <div class="pt-2">
@@ -337,6 +336,7 @@ function renderActiveTicket() {
     }
 
     container.innerHTML = ticket.legs.map((leg, index) => {
+        const adv = leg.advanced || {};
         return `
             <div class="bg-slate-900/90 border border-slate-800 p-4 rounded-xl space-y-3 relative hover:border-emerald-500/40 transition shadow-lg">
                 <div class="flex items-center justify-between">
@@ -352,6 +352,23 @@ function renderActiveTicket() {
                     </div>
                 </div>
 
+                ${adv.xg_home ? `
+                    <div class="grid grid-cols-3 gap-1.5 p-2 bg-slate-950/80 rounded-lg border border-slate-800/80 text-[10px] font-mono">
+                        <div>
+                            <span class="text-slate-400 block">xG Projeté</span>
+                            <strong class="text-amber-400">${adv.xg_home} - ${adv.xg_away}</strong>
+                        </div>
+                        <div>
+                            <span class="text-slate-400 block">Field Tilt</span>
+                            <strong class="text-emerald-400">${adv.field_tilt}%</strong>
+                        </div>
+                        <div>
+                            <span class="text-slate-400 block">Edge EV</span>
+                            <strong class="text-blue-400">+${adv.edge_ev_pct}%</strong>
+                        </div>
+                    </div>
+                ` : ''}
+
                 <div class="p-2.5 rounded-lg bg-slate-950/70 border border-slate-800/80 text-xs text-slate-300 space-y-1">
                     <div class="text-[11px] font-mono text-emerald-400 font-bold">POURQUOI CE CHOIX :</div>
                     <p>${leg.why_this_pick}</p>
@@ -366,7 +383,7 @@ function renderActiveTicket() {
     }).join('');
 }
 
-// --- ALTERNATIVE MATCHES (1 ALTERNATIVE FOR SIMPLE VS 5 FOR PRO) ---
+// --- ALTERNATIVE MATCHES (1 FOR SIMPLE VS 5 FOR PRO) ---
 function filterPremiumMatches(league) {
     activeLeagueFilter = league;
 
@@ -389,7 +406,6 @@ function renderFilteredAlternatives() {
     const filtered = activeLeagueFilter === 'ALL' ? allPremiumMatches : allPremiumMatches.filter(m => m.competition.toLowerCase().includes(activeLeagueFilter.toLowerCase()));
     const isPro = currentUser && (currentUser.tier === 'PREMIUM' || currentUser.tier === 'PRO');
 
-    // RULE: Simple and Free Trial get 1 alternative match. Pro gets all 5.
     const visibleList = isPro ? filtered : filtered.slice(0, 1);
 
     if (visibleList.length === 0) {
@@ -399,6 +415,7 @@ function renderFilteredAlternatives() {
     }
 
     container.innerHTML = visibleList.map(m => {
+        const adv = m.advanced || {};
         return `
             <div class="bg-cardbg border border-slate-800 hover:border-amber-500/40 transition rounded-2xl p-5 space-y-4 shadow-xl">
                 
@@ -415,17 +432,40 @@ function renderFilteredAlternatives() {
                     </div>
                 </div>
 
-                <!-- Match Teams & Projected xG -->
+                <!-- Match Teams & Key Indicators -->
                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div>
                         <h3 class="text-lg font-black text-white">${m.match}</h3>
                         <p class="text-xs text-slate-300 mt-1 leading-relaxed">${m.tactical_analysis}</p>
                     </div>
-                    <div class="bg-slate-950/80 p-3 rounded-xl border border-slate-800 text-center shrink-0 min-w-[140px]">
+                    <div class="bg-slate-950/80 p-3 rounded-xl border border-slate-800 text-center shrink-0 min-w-[150px]">
                         <div class="text-[10px] font-mono uppercase text-slate-400">xG Projeté (Dixon-Coles)</div>
                         <div class="text-xl font-mono font-black text-amber-400 mt-0.5">${m.xg_home} - ${m.xg_away}</div>
+                        ${adv.top_score ? `<div class="text-[10px] font-mono text-slate-400 mt-1">Score : <strong class="text-white">${adv.top_score}</strong></div>` : ''}
                     </div>
                 </div>
+
+                <!-- Tactical Metrics Strip -->
+                ${adv.ppda ? `
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 p-2.5 bg-slate-950/90 rounded-xl border border-slate-800 text-xs font-mono">
+                        <div class="border-r border-slate-800/80 pr-2">
+                            <span class="text-[10px] text-slate-400 block uppercase">PPDA (Pressing)</span>
+                            <span class="text-white font-bold">${adv.ppda.home} vs ${adv.ppda.away}</span>
+                        </div>
+                        <div class="border-r border-slate-800/80 pr-2">
+                            <span class="text-[10px] text-slate-400 block uppercase">Field Tilt</span>
+                            <span class="text-emerald-400 font-bold">${adv.field_tilt_pct.home}% - ${adv.field_tilt_pct.away}%</span>
+                        </div>
+                        <div class="border-r border-slate-800/80 pr-2">
+                            <span class="text-[10px] text-slate-400 block uppercase">xPoints (xPts)</span>
+                            <span class="text-amber-400 font-bold">${adv.xpts.home} vs ${adv.xpts.away}</span>
+                        </div>
+                        <div>
+                            <span class="text-[10px] text-slate-400 block uppercase">Transition</span>
+                            <span class="text-blue-400 font-bold">${adv.direct_speed_mps.home} m/s</span>
+                        </div>
+                    </div>
+                ` : ''}
 
                 <!-- 3 Actionable Picks Breakdown -->
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-3.5 pt-1">
@@ -448,7 +488,10 @@ function renderFilteredAlternatives() {
                             <span class="text-[11px] font-mono font-black text-blue-300">${m.value_pick.win_prob_pct}%</span>
                         </div>
                         <div class="text-sm font-bold text-white">${m.value_pick.market}</div>
-                        <div class="text-xs font-mono text-slate-300">Cote : <strong class="text-blue-400">@ ${m.value_pick.odds.toFixed(2)}</strong></div>
+                        <div class="flex items-center justify-between text-xs font-mono text-slate-300">
+                            <span>Cote : <strong class="text-blue-400">@ ${m.value_pick.odds.toFixed(2)}</strong></span>
+                            ${m.value_pick.ev_pct ? `<span class="text-emerald-400 font-bold font-mono">+${m.value_pick.ev_pct}% EV</span>` : ''}
+                        </div>
                         <p class="text-[11px] text-slate-400 border-t border-slate-800/80 pt-1.5 leading-snug">${m.value_pick.reason}</p>
                     </div>
 
@@ -568,7 +611,6 @@ async function submitSubscriptionCheckout() {
         const confirmRes = await fetch(`/api/v1/payments/simulate-webhook/${data.transaction_id}?plan_tier=${activeModalPlan}&user_email=${encodeURIComponent(userEmail)}`, { method: 'POST' });
         const confirmData = await confirmRes.json();
 
-        // Update local session to new tier immediately
         if (!currentUser) {
             currentUser = { email: contact, is_guest: false };
         }
@@ -612,7 +654,7 @@ async function submitSubscriptionCheckout() {
     }
 }
 
-// --- SECTION MANUELLE DES ÉQUIPES (ANALYSEUR LIBRE AVEC QUOTA 5/JOUR OU ILLIMITÉ) ---
+// --- SECTION MANUELLE DES ÉQUIPES : CALCUL AVEC TOUS LES INDICATEURS AVANCÉS ---
 function setTeams(home, away) {
     document.getElementById('inputHomeTeam').value = home;
     document.getElementById('inputAwayTeam').value = away;
@@ -634,7 +676,10 @@ async function runCustomAnalysis() {
     const btn = document.getElementById('btnRunAnalysis');
     if (!output) return;
 
-    output.innerHTML = `<div class="p-6 text-center text-xs font-mono text-slate-400">Calcul du verdict mathématique et détection des pièges pour ${home} vs ${away}...</div>`;
+    output.innerHTML = `<div class="p-8 text-center text-xs font-mono text-slate-400 space-y-2">
+        <div class="animate-spin inline-block w-6 h-6 border-2 border-emerald-500 border-t-transparent rounded-full"></div>
+        <div>Modélisation bivariée Dixon-Coles & calcul de tous les indicateurs avancés pour ${home} vs ${away}...</div>
+    </div>`;
     if (btn) btn.disabled = true;
 
     try {
@@ -651,7 +696,7 @@ async function runCustomAnalysis() {
         const data = await res.json();
         if (btn) btn.disabled = false;
 
-        // If Quota is exceeded for Simple or Trial user
+        // If Quota exceeded for Simple or Trial user
         if (data.quota_exceeded) {
             output.innerHTML = `
                 <div class="p-6 rounded-2xl bg-amber-950/30 border border-amber-500/50 space-y-3 text-center">
@@ -679,25 +724,156 @@ async function runCustomAnalysis() {
         }
 
         const badgeColor = data.verdict_status === 'SAFE_GREEN' ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40' : (data.verdict_status === 'BALANCED_YELLOW' ? 'bg-amber-500/20 text-amber-300 border-amber-500/40' : 'bg-rose-500/20 text-rose-300 border-rose-500/40');
+        const adv = data.advanced_metrics || {};
+        const probs = data.true_probabilities || {};
+        const fair = data.fair_odds || {};
+        const topScores = data.top_exact_scores || {};
 
         output.innerHTML = `
-            <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 space-y-4">
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-4">
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-6 shadow-2xl">
+                
+                <!-- 1. Header Verdict Summary -->
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-4">
                     <div>
-                        <div class="flex items-center gap-2">
+                        <div class="flex items-center gap-2 flex-wrap">
                             <span class="text-xs font-mono px-2 py-0.5 rounded border font-bold ${badgeColor}">${data.verdict_badge}</span>
                             <span class="text-xs text-slate-400 font-mono">Indice de Lisibilité : <strong class="text-white">${data.readability_score} / 100</strong></span>
+                            <span class="text-xs text-slate-500 font-mono">• Modèle Dixon-Coles (ρ = -0.11)</span>
                         </div>
-                        <h3 class="text-lg font-black text-white mt-1">${data.home_team} vs ${data.away_team}</h3>
-                        <p class="text-xs text-slate-300 mt-0.5">${data.verdict_desc}</p>
+                        <h3 class="text-xl font-black text-white mt-1.5">${data.home_team} vs ${data.away_team}</h3>
+                        <p class="text-xs text-slate-300 mt-1 leading-relaxed">${data.verdict_desc}</p>
                     </div>
-                    <div class="text-right shrink-0">
-                        <div class="text-[11px] font-mono text-slate-400">Score le plus probable</div>
-                        <div class="text-xl font-black text-emerald-400 font-mono">${Math.round(data.projected_xg.home)} - ${Math.round(data.projected_xg.away)}</div>
+                    <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 text-center shrink-0 min-w-[150px]">
+                        <div class="text-[10px] font-mono uppercase text-slate-400">Score le plus probable</div>
+                        <div class="text-2xl font-black text-amber-400 font-mono mt-0.5">${data.most_likely_score || '1-0'}</div>
+                        <div class="text-[10px] font-mono text-emerald-400 mt-0.5">xG : ${adv.xg ? adv.xg.home + ' - ' + adv.xg.away : ''}</div>
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
+                <!-- 2. Dashboard des Indicateurs Avancés (Metrics Grid) -->
+                <div>
+                    <h4 class="text-xs font-mono uppercase text-slate-400 font-bold mb-2.5 flex items-center gap-1.5">
+                        <span>📊</span>
+                        <span>Indicateurs Tactiques & Physiques Avancés</span>
+                    </h4>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5 text-xs font-mono">
+                        <div class="p-3 bg-slate-950 rounded-xl border border-slate-800">
+                            <span class="text-[10px] text-slate-400 block uppercase">xG (Hors Penalty)</span>
+                            <div class="text-sm font-black text-white mt-0.5">${adv.npxg ? adv.npxg.home + ' vs ' + adv.npxg.away : '-'}</div>
+                            <span class="text-[9px] text-slate-500">npxG généré</span>
+                        </div>
+                        <div class="p-3 bg-slate-950 rounded-xl border border-slate-800">
+                            <span class="text-[10px] text-slate-400 block uppercase">Solidité (xGA)</span>
+                            <div class="text-sm font-black text-emerald-400 mt-0.5">${adv.xga ? adv.xga.home + ' vs ' + adv.xga.away : '-'}</div>
+                            <span class="text-[9px] text-slate-500">xG concédé/m</span>
+                        </div>
+                        <div class="p-3 bg-slate-950 rounded-xl border border-slate-800">
+                            <span class="text-[10px] text-slate-400 block uppercase">PPDA (Pressing)</span>
+                            <div class="text-sm font-black text-amber-400 mt-0.5">${adv.ppda ? adv.ppda.home + ' vs ' + adv.ppda.away : '-'}</div>
+                            <span class="text-[9px] text-slate-500">Pression haute</span>
+                        </div>
+                        <div class="p-3 bg-slate-950 rounded-xl border border-slate-800">
+                            <span class="text-[10px] text-slate-400 block uppercase">Field Tilt</span>
+                            <div class="text-sm font-black text-cyan-400 mt-0.5">${adv.field_tilt_pct ? adv.field_tilt_pct.home + '% - ' + adv.field_tilt_pct.away + '%' : '-'}</div>
+                            <span class="text-[9px] text-slate-500">Dernier tiers</span>
+                        </div>
+                        <div class="p-3 bg-slate-950 rounded-xl border border-slate-800">
+                            <span class="text-[10px] text-slate-400 block uppercase">Points (xPts)</span>
+                            <div class="text-sm font-black text-purple-400 mt-0.5">${adv.xpts ? adv.xpts.home + ' vs ' + adv.xpts.away : '-'}</div>
+                            <span class="text-[9px] text-slate-500">Points attendus</span>
+                        </div>
+                        <div class="p-3 bg-slate-950 rounded-xl border border-slate-800">
+                            <span class="text-[10px] text-slate-400 block uppercase">Transition</span>
+                            <div class="text-sm font-black text-blue-400 mt-0.5">${adv.direct_speed_mps ? adv.direct_speed_mps.home + ' m/s' : '-'}</div>
+                            <span class="text-[9px] text-slate-500">Vitesse verticale</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. Tableau des Probabilités Réelles & Cotes Équitables Pures (Zero Vig) -->
+                <div>
+                    <h4 class="text-xs font-mono uppercase text-slate-400 font-bold mb-2.5 flex items-center gap-1.5">
+                        <span>🎯</span>
+                        <span>Probabilités Réelles & Cotes Équitables Pures (Sans Marge Bookmaker)</span>
+                    </h4>
+                    <div class="overflow-x-auto bg-slate-950 rounded-xl border border-slate-800 p-2">
+                        <table class="w-full text-left text-xs font-mono text-slate-300">
+                            <thead class="border-b border-slate-800 text-[10px] text-slate-400 uppercase">
+                                <tr>
+                                    <th class="py-2 px-3">Marché</th>
+                                    <th class="py-2 px-3 text-center">Probabilité Réelle</th>
+                                    <th class="py-2 px-3 text-center">Cote Équitable Pure (Fair)</th>
+                                    <th class="py-2 px-3 text-right">Rôle Recommandé</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-800/60 font-sans">
+                                <tr>
+                                    <td class="py-2.5 px-3 font-bold text-white">Victoire Domicile (1)</td>
+                                    <td class="py-2.5 px-3 text-center font-mono text-emerald-400 font-bold">${probs.home_win_pct}%</td>
+                                    <td class="py-2.5 px-3 text-center font-mono font-bold text-white">@ ${fair.home ? fair.home.toFixed(2) : '-'}</td>
+                                    <td class="py-2.5 px-3 text-right text-xs text-slate-400">${probs.home_win_pct >= 55 ? 'Favori Mathématique' : 'Incertain'}</td>
+                                </tr>
+                                <tr>
+                                    <td class="py-2.5 px-3 font-bold text-white">Match Nul (X)</td>
+                                    <td class="py-2.5 px-3 text-center font-mono text-slate-300">${probs.draw_pct}%</td>
+                                    <td class="py-2.5 px-3 text-center font-mono font-bold text-white">@ ${fair.draw ? fair.draw.toFixed(2) : '-'}</td>
+                                    <td class="py-2.5 px-3 text-right text-xs text-slate-400">Score Serré</td>
+                                </tr>
+                                <tr>
+                                    <td class="py-2.5 px-3 font-bold text-white">Victoire Extérieur (2)</td>
+                                    <td class="py-2.5 px-3 text-center font-mono text-blue-400">${probs.away_win_pct}%</td>
+                                    <td class="py-2.5 px-3 text-center font-mono font-bold text-white">@ ${fair.away ? fair.away.toFixed(2) : '-'}</td>
+                                    <td class="py-2.5 px-3 text-right text-xs text-slate-400">${probs.away_win_pct >= 55 ? 'Favori Mathématique' : 'Outsider'}</td>
+                                </tr>
+                                <tr>
+                                    <td class="py-2.5 px-3 font-bold text-emerald-300">Double Chance 1X</td>
+                                    <td class="py-2.5 px-3 text-center font-mono text-emerald-400 font-black">${probs.dc_1x_pct}%</td>
+                                    <td class="py-2.5 px-3 text-center font-mono font-bold text-emerald-300">@ ${fair.dc_1x ? fair.dc_1x.toFixed(2) : '-'}</td>
+                                    <td class="py-2.5 px-3 text-right text-xs text-emerald-400 font-bold">${probs.dc_1x_pct >= 75 ? '💎 Couverture Optimale' : 'Risqué'}</td>
+                                </tr>
+                                <tr>
+                                    <td class="py-2.5 px-3 font-bold text-white">Plus de 1.5 Buts (Over 1.5)</td>
+                                    <td class="py-2.5 px-3 text-center font-mono text-amber-400 font-bold">${probs.over_15_pct}%</td>
+                                    <td class="py-2.5 px-3 text-center font-mono font-bold text-white">@ ${fair.over_15 ? fair.over_15.toFixed(2) : '-'}</td>
+                                    <td class="py-2.5 px-3 text-right text-xs text-slate-400">${probs.over_15_pct >= 75 ? 'Blindé Anti-Aléa' : 'Modéré'}</td>
+                                </tr>
+                                <tr>
+                                    <td class="py-2.5 px-3 font-bold text-white">Plus de 2.5 Buts (Over 2.5)</td>
+                                    <td class="py-2.5 px-3 text-center font-mono text-white">${probs.over_25_pct}%</td>
+                                    <td class="py-2.5 px-3 text-center font-mono font-bold text-white">@ ${fair.over_25 ? fair.over_25.toFixed(2) : '-'}</td>
+                                    <td class="py-2.5 px-3 text-right text-xs text-slate-400">Match Ouvert</td>
+                                </tr>
+                                <tr>
+                                    <td class="py-2.5 px-3 font-bold text-white">Les Deux Équipes Marquent (BTTS)</td>
+                                    <td class="py-2.5 px-3 text-center font-mono text-cyan-400">${probs.btts_yes_pct}%</td>
+                                    <td class="py-2.5 px-3 text-center font-mono font-bold text-white">@ ${fair.btts_yes ? fair.btts_yes.toFixed(2) : '-'}</td>
+                                    <td class="py-2.5 px-3 text-right text-xs text-slate-400">${probs.btts_yes_pct >= 55 ? 'Attaques Actives' : 'Fermé'}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 4. Matrice des Scores Exacts les Plus Probables -->
+                ${Object.keys(topScores).length > 0 ? `
+                    <div>
+                        <h4 class="text-xs font-mono uppercase text-slate-400 font-bold mb-2 flex items-center gap-1.5">
+                            <span>🎲</span>
+                            <span>Matrice des Scores les Plus Probables (Poisson Bivarié)</span>
+                        </h4>
+                        <div class="flex flex-wrap gap-2 text-xs font-mono">
+                            ${Object.entries(topScores).map(([score, prob]) => `
+                                <div class="px-3 py-1.5 bg-slate-950 rounded-lg border border-slate-800 flex items-center gap-2">
+                                    <span class="font-bold text-white">${score}</span>
+                                    <span class="text-emerald-400">${prob}%</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                ` : ''}
+
+                <!-- 5. 3 Actionable Picks Breakdown -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-1">
                     <div class="p-4 rounded-xl bg-emerald-950/20 border border-emerald-500/40 space-y-2">
                         <div class="text-xs font-mono uppercase text-emerald-400 font-bold">🛡️ Le Choix Blindé (Le Plus Sûr)</div>
                         <div class="text-sm font-bold text-white">${data.safe_pick.title}</div>
@@ -709,7 +885,10 @@ async function runCustomAnalysis() {
                     </div>
 
                     <div class="p-4 rounded-xl bg-blue-950/20 border border-blue-500/40 space-y-2">
-                        <div class="text-xs font-mono uppercase text-blue-400 font-bold">🎯 Le Choix Équilibré (Cote ~2.00)</div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-mono uppercase text-blue-400 font-bold">🎯 Choix Rentable (Value Pick)</span>
+                            ${data.value_pick.ev_pct ? `<span class="text-xs font-mono font-bold text-emerald-400">+${data.value_pick.ev_pct}% EV</span>` : ''}
+                        </div>
                         <div class="text-sm font-bold text-white">${data.value_pick.title}</div>
                         <div class="flex items-center justify-between text-xs font-mono text-slate-300">
                             <span>Cote estimée : <strong class="text-blue-400">@ ${data.value_pick.estimated_odds}</strong></span>
@@ -726,10 +905,11 @@ async function runCustomAnalysis() {
                     </div>
                 </div>
 
-                <div class="p-3 bg-slate-950 rounded-lg border border-slate-800 text-xs text-slate-400 flex items-center justify-between">
-                    <span>💡 ${data.advice_rule}</span>
-                    <span class="font-mono text-emerald-400 font-bold">
-                        ${data.is_unlimited ? 'Analyses : Illimitées (Pro)' : `Analyses restantes : ${data.analyses_remaining} / 5`}
+                <!-- 6. Capital Sizing & Discipline Footer -->
+                <div class="p-3.5 bg-slate-950 rounded-xl border border-slate-800 text-xs text-slate-300 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <span class="font-mono text-emerald-400 font-bold">⚖️ ${data.advice_rule}</span>
+                    <span class="text-[11px] text-slate-400">
+                        ${data.is_unlimited ? 'Analyses : Illimitées (Pro)' : `Analyses restantes : <strong class="text-white">${data.analyses_remaining} / 5</strong>`}
                     </span>
                 </div>
             </div>

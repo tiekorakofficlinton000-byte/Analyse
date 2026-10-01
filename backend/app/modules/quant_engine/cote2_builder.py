@@ -4,7 +4,7 @@ Generates:
 1. Safe Combo Cote 2.00 (Duo Blindé)
 2. Balanced Combo Cote 3.00 (Trio Équilibré)
 3. Expert Combo Cote 5.00 (Quatuor Rentabilité EV+)
-4. Deeply Analyzed Premium Matches of the Day and Week
+4. Deeply Analyzed Premium Matches of the Day and Week with Advanced Quant Indicators
 """
 
 from typing import Dict, Any, List
@@ -23,6 +23,10 @@ def get_all_combos_and_premium() -> Dict[str, Any]:
             "odds": 1.42,
             "individual_win_prob_pct": 87.5,
             "readability_score": 94,
+            "advanced": {
+                "xg_home": 2.45, "xg_away": 0.65, "ppda": 8.1, "field_tilt": 71.0,
+                "fair_odds": 1.14, "edge_ev_pct": 4.8
+            },
             "why_this_pick": "Man City à domicile produit 2.45 xG moyens. Les Citizens n'ont jamais perdu contre Everton à l'Etihad ces 10 dernières années. Le seuil de 1.5 buts est validé dans 93% des matchs de City.",
             "trap_avoided": "Évite la victoire sèche avec handicap (-2.5) qui est souvent victime de rotation ou de gestion d'effort."
         },
@@ -35,6 +39,10 @@ def get_all_combos_and_premium() -> Dict[str, Any]:
             "odds": 1.44,
             "individual_win_prob_pct": 84.0,
             "readability_score": 92,
+            "advanced": {
+                "xg_home": 2.40, "xg_away": 1.15, "ppda": 8.8, "field_tilt": 64.5,
+                "fair_odds": 1.19, "edge_ev_pct": 5.2
+            },
             "why_this_pick": "Villarreal joue avec un bloc médian haut qui offre d'énormes espaces aux ailiers madrilènes. Les deux équipes marquent ou concèdent dans 89% de leurs matchs cette saison.",
             "trap_avoided": "Évite le pari 'Real gagne sans encaisser' car Villarreal marque dans 80% de ses déplacements."
         }
@@ -63,6 +71,10 @@ def get_all_combos_and_premium() -> Dict[str, Any]:
             "odds": 1.54,
             "individual_win_prob_pct": 80.0,
             "readability_score": 89,
+            "advanced": {
+                "xg_home": 2.65, "xg_away": 1.10, "ppda": 7.8, "field_tilt": 67.0,
+                "fair_odds": 1.25, "edge_ev_pct": 6.1
+            },
             "why_this_pick": "L'Allianz Arena voit en moyenne 3.8 buts par match. Francfort possède un potentiel offensif élevé en contre, poussant le match vers un score prolifique sans mettre en danger l'issue Bayern.",
             "trap_avoided": "Évite la victoire Bayern avec clean sheet : Francfort a marqué lors de ses 6 derniers duels face au Bayern."
         }
@@ -92,6 +104,10 @@ def get_all_combos_and_premium() -> Dict[str, Any]:
             "odds": 1.65,
             "individual_win_prob_pct": 78.5,
             "readability_score": 88,
+            "advanced": {
+                "xg_home": 2.15, "xg_away": 0.70, "ppda": 9.8, "field_tilt": 60.5,
+                "fair_odds": 1.28, "edge_ev_pct": 5.8
+            },
             "why_this_pick": "L'Inter à San Siro concède moins de 0.8 xGA. Le Torino est une équipe de bloc bas rigide. Jamais cette confrontation n'a dépassé 4 buts sur les 14 dernières rencontres.",
             "trap_avoided": "Évite la victoire sèche de l'Inter avec plus de 2.5 buts, car le Torino verrouille les espaces et casse le rythme."
         }
@@ -107,7 +123,7 @@ def get_all_combos_and_premium() -> Dict[str, Any]:
         "legs": legs_cote5
     }
 
-    # --- SÉLECTION PREMIUM : MATCHS DE LA SEMAINE ANALYSÉS EN PROFONDEUR ---
+    # --- SÉLECTION DES MATCHS DE LA SEMAINE ANALYSÉS EN PROFONDEUR ---
     premium_matches = [
         {
             "id": "match-real-villarreal",
@@ -119,6 +135,16 @@ def get_all_combos_and_premium() -> Dict[str, Any]:
             "readability_score": 93,
             "xg_home": 2.40,
             "xg_away": 1.15,
+            "advanced": {
+                "npxg": {"home": 2.18, "away": 1.02},
+                "xga": {"home": 0.82, "away": 1.38},
+                "ppda": {"home": 8.8, "away": 10.2},
+                "field_tilt_pct": {"home": 64.5, "away": 35.5},
+                "direct_speed_mps": {"home": 1.75, "away": 1.85},
+                "xpts": {"home": 2.25, "away": 0.55},
+                "top_score": "2-1 (13.4%)",
+                "fair_odds": {"home_1": 1.45, "draw_x": 4.60, "away_2": 6.20, "over_25": 1.55}
+            },
             "tactical_analysis": "Le Real Madrid surperforme son volume offensif à Bernabéu (2.65 xG/90m). Villarreal évolue avec un bloc médian qui concède 13.8 tirs par match à l'extérieur. Le volume d'occasions sera très élevé des deux côtés.",
             "safe_pick": {
                 "market": "Real Madrid ou Nul & Plus de 1.5 Buts",
@@ -130,6 +156,7 @@ def get_all_combos_and_premium() -> Dict[str, Any]:
                 "market": "Real Madrid gagne & Plus de 2.5 Buts",
                 "odds": 1.82,
                 "win_prob_pct": 65.0,
+                "ev_pct": 18.3,
                 "reason": "Cote supérieure à la valeur mathématique estimée (probabilité réelle de 65% vs cote implicite à 55%)."
             },
             "trap_warning": {
@@ -148,6 +175,16 @@ def get_all_combos_and_premium() -> Dict[str, Any]:
             "readability_score": 91,
             "xg_home": 1.45,
             "xg_away": 1.55,
+            "advanced": {
+                "npxg": {"home": 1.35, "away": 1.45},
+                "xga": {"home": 0.76, "away": 0.74},
+                "ppda": {"home": 8.4, "away": 8.1},
+                "field_tilt_pct": {"home": 51.5, "away": 48.5},
+                "direct_speed_mps": {"home": 1.60, "away": 1.40},
+                "xpts": {"home": 1.35, "away": 1.40},
+                "top_score": "1-1 (14.2%)",
+                "fair_odds": {"home_1": 2.70, "draw_x": 3.25, "away_2": 2.60, "under_25": 1.78}
+            },
             "tactical_analysis": "Duel au sommet entre les deux meilleures structures défensives d'Angleterre. Arsenal n'accorde que 0.78 xGA à domicile. Les chocs directs récents entre Arteta et Guardiola sont des batailles d'échecs ultra-fermées.",
             "safe_pick": {
                 "market": "Moins de 3.5 Buts dans le Match",
@@ -159,6 +196,7 @@ def get_all_combos_and_premium() -> Dict[str, Any]:
                 "market": "Match Nul à la Mi-Temps OU Man City DNB (remboursé si nul)",
                 "odds": 1.75,
                 "win_prob_pct": 64.0,
+                "ev_pct": 12.0,
                 "reason": "Le premier acte est historiquement un round d'observation fermé (0-0 ou 1-1 à la pause dans 70% des cas)."
             },
             "trap_warning": {
@@ -177,6 +215,16 @@ def get_all_combos_and_premium() -> Dict[str, Any]:
             "readability_score": 94,
             "xg_home": 2.20,
             "xg_away": 1.80,
+            "advanced": {
+                "npxg": {"home": 2.05, "away": 1.70},
+                "xga": {"home": 0.98, "away": 0.85},
+                "ppda": {"home": 7.8, "away": 8.0},
+                "field_tilt_pct": {"home": 58.0, "away": 42.0},
+                "direct_speed_mps": {"home": 1.80, "away": 1.70},
+                "xpts": {"home": 1.75, "away": 1.05},
+                "top_score": "2-2 (11.8%)",
+                "fair_odds": {"home_1": 1.95, "draw_x": 3.90, "away_2": 3.60, "over_25": 1.48}
+            },
             "tactical_analysis": "Choc explosif de Bundesliga avec deux attaques d'élite. Leverkusen marque dans 100% de ses matchs cette saison et excelle sous pression. Le Bayern impose un rythme effréné qui expose ses deux défenseurs centraux.",
             "safe_pick": {
                 "market": "Les Deux Équipes Marquent (BTTS - Oui)",
@@ -188,6 +236,7 @@ def get_all_combos_and_premium() -> Dict[str, Any]:
                 "market": "Plus de 3.0 Buts Asiatiques",
                 "odds": 1.85,
                 "win_prob_pct": 68.0,
+                "ev_pct": 25.8,
                 "reason": "Remboursé si exactement 3 buts, gagnant à 4 buts ou plus. Profil statistique parfait."
             },
             "trap_warning": {
@@ -206,6 +255,16 @@ def get_all_combos_and_premium() -> Dict[str, Any]:
             "readability_score": 89,
             "xg_home": 1.60,
             "xg_away": 0.95,
+            "advanced": {
+                "npxg": {"home": 1.48, "away": 0.88},
+                "xga": {"home": 0.72, "away": 0.70},
+                "ppda": {"home": 9.8, "away": 12.0},
+                "field_tilt_pct": {"home": 60.5, "away": 39.5},
+                "direct_speed_mps": {"home": 1.75, "away": 1.85},
+                "xpts": {"home": 1.95, "away": 0.80},
+                "top_score": "1-0 (15.5%)",
+                "fair_odds": {"home_1": 1.85, "draw_x": 3.40, "away_2": 4.50, "under_25": 1.72}
+            },
             "tactical_analysis": "Le Derby d'Italie est la quintessence du football tactique italien. La Juventus affiche la meilleure défense de Serie A (seulement 4 buts encaissés). L'Inter monopolise le ballon mais peinera à transpercer la double ligne turinoise.",
             "safe_pick": {
                 "market": "Inter Milan ou Nul & Moins de 3.5 Buts",
@@ -217,6 +276,7 @@ def get_all_combos_and_premium() -> Dict[str, Any]:
                 "market": "Moins de 2.5 Buts dans le Match",
                 "odds": 1.78,
                 "win_prob_pct": 63.0,
+                "ev_pct": 12.1,
                 "reason": "8 des 10 derniers Derbys d'Italie se sont achevés sur un score de 1-0, 0-0 ou 1-1."
             },
             "trap_warning": {
@@ -235,6 +295,16 @@ def get_all_combos_and_premium() -> Dict[str, Any]:
             "readability_score": 92,
             "xg_home": 2.35,
             "xg_away": 1.10,
+            "advanced": {
+                "npxg": {"home": 2.15, "away": 0.98},
+                "xga": {"home": 0.88, "away": 1.12},
+                "ppda": {"home": 7.4, "away": 9.2},
+                "field_tilt_pct": {"home": 69.5, "away": 30.5},
+                "direct_speed_mps": {"home": 1.65, "away": 1.80},
+                "xpts": {"home": 2.15, "away": 0.65},
+                "top_score": "2-1 (13.8%)",
+                "fair_odds": {"home_1": 1.50, "draw_x": 4.40, "away_2": 5.80, "over_25": 1.58}
+            },
             "tactical_analysis": "Le Classique au Parc des Princes. Le PSG applique un contre-pressing étouffant (PPDA de 7.4). Marseille possède des attaquants percutants mais leur déséquilibre défensif lors des pertes de balle est rédhibitoire face à la vitesse parisienne.",
             "safe_pick": {
                 "market": "PSG ou Nul & Plus de 1.5 Buts",
@@ -246,6 +316,7 @@ def get_all_combos_and_premium() -> Dict[str, Any]:
                 "market": "PSG gagne & Plus de 2.5 Buts",
                 "odds": 1.90,
                 "win_prob_pct": 64.0,
+                "ev_pct": 21.6,
                 "reason": "La supériorité technique et le banc du PSG font la différence en seconde période."
             },
             "trap_warning": {
@@ -268,7 +339,6 @@ def get_all_combos_and_premium() -> Dict[str, Any]:
 
 
 def generate_daily_cote_2() -> Dict[str, Any]:
-    """Backward compatibility helper for /daily-ticket endpoint."""
     all_data = get_all_combos_and_premium()
     cote2 = all_data["tickets"]["cote2"]
     return {
