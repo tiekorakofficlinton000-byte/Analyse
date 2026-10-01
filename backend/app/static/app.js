@@ -1,6 +1,12 @@
 /**
  * DuoSecur Pro — Client Controller
+ * Multi-Tier Combos (Cote 2, Cote 3, Cote 5) & Premium Match Analyses
  */
+
+let allTicketsData = {};
+let allPremiumMatches = [];
+let activeTier = 'cote2';
+let activeLeagueFilter = 'ALL';
 
 function switchTab(tabId) {
     document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.add('hidden'));
@@ -24,10 +30,71 @@ function switchTab(tabId) {
     }
 }
 
-function setTeams(home, away) {
-    document.getElementById('inputHomeTeam').value = home;
-    document.getElementById('inputAwayTeam').value = away;
-    runCustomAnalysis();
+function selectTicketTier(tier) {
+    activeTier = tier;
+
+    // Update buttons appearance
+    const btnCote2 = document.getElementById('btnTierCote2');
+    const btnCote3 = document.getElementById('btnTierCote3');
+    const btnCote5 = document.getElementById('btnTierCote5');
+
+    const inactiveClass = "flex-1 sm:flex-initial py-2 px-4 rounded-lg text-xs font-black transition flex items-center justify-center gap-1.5 text-slate-400 hover:text-white";
+    const activeClass = "flex-1 sm:flex-initial py-2 px-4 rounded-lg text-xs font-black transition flex items-center justify-center gap-1.5 bg-emerald-500 text-black shadow";
+
+    if (btnCote2) btnCote2.className = tier === 'cote2' ? activeClass : inactiveClass;
+    if (btnCote3) btnCote3.className = tier === 'cote3' ? activeClass : inactiveClass;
+    if (btnCote5) btnCote5.className = tier === 'cote5' ? activeClass : inactiveClass;
+
+    renderActiveTicket();
+}
+
+function renderActiveTicket() {
+    const ticket = allTicketsData[activeTier];
+    if (!ticket) return;
+
+    const totalOddsEl = document.getElementById('cote2TotalOdds');
+    const probEl = document.getElementById('cote2Prob');
+    const titleEl = document.getElementById('ticketTitleText');
+    const descEl = document.getElementById('ticketDescText');
+    const badgeEl = document.getElementById('ticketBadgeText');
+
+    if (totalOddsEl) totalOddsEl.innerText = ticket.combined_odds.toFixed(2);
+    if (probEl) probEl.innerText = `${ticket.joint_probability_pct}%`;
+    if (titleEl) titleEl.innerText = ticket.title;
+    if (descEl) descEl.innerText = ticket.description;
+    if (badgeEl) badgeEl.innerText = ticket.badge;
+
+    const container = document.getElementById('cote2LegsContainer');
+    if (container) {
+        container.innerHTML = ticket.legs.map((leg, index) => {
+            return `
+                <div class="bg-slate-900/90 border border-slate-800 p-4 rounded-xl space-y-3 relative hover:border-emerald-500/40 transition shadow-lg">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-mono px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 font-bold uppercase">Événement #${index + 1}</span>
+                        <span class="text-xs text-slate-400 font-mono">${leg.competition} • ${leg.time}</span>
+                    </div>
+
+                    <div>
+                        <h4 class="text-base font-bold text-white">${leg.match}</h4>
+                        <div class="mt-1 flex items-center justify-between">
+                            <span class="text-sm font-semibold text-emerald-300">${leg.selection}</span>
+                            <span class="text-lg font-mono font-black text-white px-2 py-0.5 rounded bg-slate-800 border border-slate-700">@ ${leg.odds.toFixed(2)}</span>
+                        </div>
+                    </div>
+
+                    <div class="p-2.5 rounded-lg bg-slate-950/70 border border-slate-800/80 text-xs text-slate-300 space-y-1">
+                        <div class="text-[11px] font-mono text-emerald-400 font-bold">POURQUOI CE CHOIX :</div>
+                        <p>${leg.why_this_pick}</p>
+                    </div>
+
+                    <div class="p-2 rounded-lg bg-rose-950/20 border border-rose-500/30 text-xs text-rose-300 flex items-start gap-1.5">
+                        <span class="font-bold shrink-0">🚫 Piège Évité :</span>
+                        <span>${leg.trap_avoided}</span>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
 }
 
 async function loadDailyCote2() {
@@ -35,56 +102,135 @@ async function loadDailyCote2() {
         const res = await fetch('/api/v1/cote2/daily-ticket');
         const data = await res.json();
 
-        const totalOddsEl = document.getElementById('cote2TotalOdds');
-        const probEl = document.getElementById('cote2Prob');
         const timeEl = document.getElementById('cote2Timestamp');
-
-        if (totalOddsEl) totalOddsEl.innerText = data.combined_odds.toFixed(2);
-        if (probEl) probEl.innerText = `${data.joint_probability_pct}%`;
         if (timeEl) timeEl.innerText = data.generated_at;
 
-        const container = document.getElementById('cote2LegsContainer');
-        if (container) {
-            container.innerHTML = data.legs.map((leg, index) => {
-                return `
-                    <div class="bg-slate-900/90 border border-slate-800 p-4 rounded-xl space-y-3 relative hover:border-emerald-500/40 transition">
-                        <div class="flex items-center justify-between">
-                            <span class="text-xs font-mono px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 font-bold uppercase">Événement #${index + 1} Ultra-Lisible</span>
-                            <span class="text-xs text-slate-400 font-mono">${leg.competition} • ${leg.time}</span>
-                        </div>
-
-                        <div>
-                            <h4 class="text-base font-bold text-white">${leg.match}</h4>
-                            <div class="mt-1 flex items-center justify-between">
-                                <span class="text-sm font-semibold text-emerald-300">${leg.selection}</span>
-                                <span class="text-lg font-mono font-black text-white px-2 py-0.5 rounded bg-slate-800 border border-slate-700">@ ${leg.odds.toFixed(2)}</span>
-                            </div>
-                        </div>
-
-                        <div class="p-2.5 rounded-lg bg-slate-950/70 border border-slate-800/80 text-xs text-slate-300 space-y-1">
-                            <div class="text-[11px] font-mono text-emerald-400 font-bold">POURQUOI CE CHOIX :</div>
-                            <p>${leg.why_this_pick}</p>
-                        </div>
-
-                        <div class="p-2 rounded-lg bg-rose-950/20 border border-rose-500/30 text-xs text-rose-300 flex items-start gap-1.5">
-                            <span class="font-bold shrink-0">🚫 Piège Évité :</span>
-                            <span>${leg.trap_avoided}</span>
-                        </div>
-                    </div>
-                `;
-            }).join('');
+        if (data.all_tickets) {
+            allTicketsData = data.all_tickets;
+        } else {
+            allTicketsData = {
+                cote2: {
+                    tier: "cote2",
+                    title: data.title,
+                    badge: "Double Sécurité • Cible ~2.00",
+                    description: "2 événements à la plus forte probabilité conjointe pour doubler sereinement.",
+                    combined_odds: data.combined_odds,
+                    joint_probability_pct: data.joint_probability_pct,
+                    legs: data.legs
+                }
+            };
         }
 
-        if (data.alternative_single) {
-            const altTitle = document.getElementById('altSingleTitle');
-            const altOdds = document.getElementById('altSingleOdds');
-            if (altTitle) altTitle.innerText = `${data.alternative_single.match} — ${data.alternative_single.selection}`;
-            if (altOdds) altOdds.innerText = data.alternative_single.odds.toFixed(2);
+        renderActiveTicket();
+
+        if (data.premium_week_matches) {
+            allPremiumMatches = data.premium_week_matches;
+            renderPremiumMatches(allPremiumMatches);
         }
 
     } catch (err) {
-        console.error("Error loading Cote 2 ticket:", err);
+        console.error("Error loading tickets & premium matches:", err);
     }
+}
+
+function filterPremiumMatches(league) {
+    activeLeagueFilter = league;
+
+    // Update filter buttons appearance
+    document.querySelectorAll('.premium-filter-btn').forEach(btn => {
+        if (btn.innerText.trim().toUpperCase() === league.toUpperCase() || (league === 'ALL' && btn.innerText.trim() === 'Tous')) {
+            btn.className = "premium-filter-btn px-2.5 py-1 rounded-lg bg-emerald-500 text-black font-bold";
+        } else {
+            btn.className = "premium-filter-btn px-2.5 py-1 rounded-lg text-slate-400 hover:text-white";
+        }
+    });
+
+    const filtered = league === 'ALL' ? allPremiumMatches : allPremiumMatches.filter(m => m.competition.toLowerCase().includes(league.toLowerCase()));
+    renderPremiumMatches(filtered);
+}
+
+function renderPremiumMatches(list) {
+    const container = document.getElementById('premiumMatchesContainer');
+    if (!container) return;
+
+    if (!list || list.length === 0) {
+        container.innerHTML = `<div class="p-8 text-center text-slate-500 font-mono text-xs">Aucun match trouvé pour ce filtre.</div>`;
+        return;
+    }
+
+    container.innerHTML = list.map(m => {
+        return `
+            <div class="bg-cardbg border border-slate-800 hover:border-amber-500/40 transition rounded-2xl p-5 space-y-4 shadow-xl">
+                
+                <!-- Match Header -->
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-3">
+                    <div class="flex items-center gap-2 flex-wrap">
+                        <span class="px-2.5 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30 text-[11px] font-mono font-bold uppercase">${m.competition}</span>
+                        <span class="text-xs text-slate-400 font-mono">${m.date} • ${m.time}</span>
+                        <span class="text-xs text-slate-500">• ${m.stadium}</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs font-mono text-slate-400">Indice de Lisibilité :</span>
+                        <span class="text-xs font-mono font-black px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">${m.readability_score} / 100</span>
+                    </div>
+                </div>
+
+                <!-- Match Teams & Projected xG -->
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div>
+                        <h3 class="text-lg font-black text-white">${m.match}</h3>
+                        <p class="text-xs text-slate-300 mt-1 leading-relaxed">${m.tactical_analysis}</p>
+                    </div>
+                    <div class="bg-slate-950/80 p-3 rounded-xl border border-slate-800 text-center shrink-0 min-w-[140px]">
+                        <div class="text-[10px] font-mono uppercase text-slate-400">xG Projeté (Dixon-Coles)</div>
+                        <div class="text-xl font-mono font-black text-amber-400 mt-0.5">${m.xg_home} - ${m.xg_away}</div>
+                    </div>
+                </div>
+
+                <!-- 3 Actionable Picks Breakdown -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-3.5 pt-1">
+                    
+                    <!-- 1. Le Choix Blindé -->
+                    <div class="p-3.5 rounded-xl bg-emerald-950/20 border border-emerald-500/40 space-y-2">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-mono uppercase text-emerald-400 font-bold">🛡️ Le Choix Blindé (Ultra-Sûr)</span>
+                            <span class="text-[11px] font-mono font-black text-emerald-300">${m.safe_pick.win_prob_pct}%</span>
+                        </div>
+                        <div class="text-sm font-bold text-white">${m.safe_pick.market}</div>
+                        <div class="text-xs font-mono text-slate-300">Cote : <strong class="text-emerald-400">@ ${m.safe_pick.odds.toFixed(2)}</strong></div>
+                        <p class="text-[11px] text-slate-400 border-t border-slate-800/80 pt-1.5 leading-snug">${m.safe_pick.reason}</p>
+                    </div>
+
+                    <!-- 2. Le Choix Rentable -->
+                    <div class="p-3.5 rounded-xl bg-blue-950/20 border border-blue-500/40 space-y-2">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-mono uppercase text-blue-400 font-bold">🎯 Choix Rentable (Value Pick)</span>
+                            <span class="text-[11px] font-mono font-black text-blue-300">${m.value_pick.win_prob_pct}%</span>
+                        </div>
+                        <div class="text-sm font-bold text-white">${m.value_pick.market}</div>
+                        <div class="text-xs font-mono text-slate-300">Cote : <strong class="text-blue-400">@ ${m.value_pick.odds.toFixed(2)}</strong></div>
+                        <p class="text-[11px] text-slate-400 border-t border-slate-800/80 pt-1.5 leading-snug">${m.value_pick.reason}</p>
+                    </div>
+
+                    <!-- 3. Le Piège Détecté -->
+                    <div class="p-3.5 rounded-xl bg-rose-950/20 border border-rose-500/40 space-y-2">
+                        <div class="text-xs font-mono uppercase text-rose-400 font-bold">🚫 Le Piège Détecté</div>
+                        <div class="text-sm font-bold text-rose-300">${m.trap_warning.trap_market}</div>
+                        <p class="text-[11px] text-slate-300 leading-snug">${m.trap_warning.why_its_a_trap}</p>
+                        <p class="text-[11px] text-rose-400 font-semibold border-t border-slate-800/80 pt-1.5 leading-snug">Conseil : ${m.trap_warning.recommendation}</p>
+                    </div>
+
+                </div>
+
+            </div>
+        `;
+    }).join('');
+}
+
+function setTeams(home, away) {
+    document.getElementById('inputHomeTeam').value = home;
+    document.getElementById('inputAwayTeam').value = away;
+    runCustomAnalysis();
 }
 
 async function scanMarketReadability() {
